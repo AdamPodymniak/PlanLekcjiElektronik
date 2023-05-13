@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +42,7 @@ class AllLessons {
       };
 }
 
-Future<AllLessons?> extractSinglePageData(urlParam) async {
+Future<AllLessons?> extractSinglePageData(dynamic urlParam) async {
   try {
     final url = Uri.parse("http://www.plan.elektronik.edu.pl/plany/$urlParam.html");
     final response = await http.Client().get(url);
@@ -58,10 +59,19 @@ Future<AllLessons?> extractSinglePageData(urlParam) async {
       List<LessonData> lessonData = [];
 
       for (int i = 0; i < lessons.length; i += 3) {
-        lessonData.add(LessonData(name: lessons[i], classroom: lessons[i + 2], teacher: lessons[i + 1]));
+        lessonData.add(
+          LessonData(
+            name: lessons[i],
+            classroom: lessons[i + 2],
+            teacher: lessons[i + 1],
+          ),
+        );
       }
 
-      return AllLessons(title: title, lessonData: lessonData);
+      return AllLessons(
+        title: title,
+        lessonData: lessonData,
+      );
     }
     return null;
   } catch (e) {
@@ -70,7 +80,7 @@ Future<AllLessons?> extractSinglePageData(urlParam) async {
 }
 
 Future<List<AllLessons>> extractAllData() async {
-  print("Start fetching...");
+  debugPrint("Start fetching...");
   List<AllLessons> allLessons = [];
 
   //extract classes
@@ -94,7 +104,7 @@ Future<List<AllLessons>> extractAllData() async {
     if (lessonData != null) allLessons.add(lessonData);
   }
   saveData("lessons", allLessons);
-  print("Done");
+  debugPrint("Done");
   return allLessons;
 }
 
@@ -102,8 +112,6 @@ Future saveData(String key, List<AllLessons> lessons) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   await prefs.setString(key, json.encode(lessons));
-
-  return null;
 }
 
 Future<List<AllLessons>> retrieveDataFromJSON() async {
@@ -114,9 +122,21 @@ Future<List<AllLessons>> retrieveDataFromJSON() async {
   for (var lesson in lessons) {
     List<LessonData> lessonData = [];
     for (var ld in lesson['lessonData']) {
-      lessonData.add(LessonData(name: ld['name'], classroom: ld['classroom'], teacher: ld['teacher']));
+      lessonData.add(
+        LessonData(
+          name: ld['name'],
+          classroom: ld['classroom'],
+          teacher: ld['teacher'],
+        ),
+      );
     }
-    retrievedLessons.add(AllLessons(title: lesson['title'], type: lesson['type'], lessonData: lessonData));
+    retrievedLessons.add(
+      AllLessons(
+        title: lesson['title'],
+        type: lesson['type'],
+        lessonData: lessonData,
+      ),
+    );
   }
 
   return retrievedLessons;

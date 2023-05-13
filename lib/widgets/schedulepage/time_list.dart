@@ -1,8 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:plan_lekcji/utils/theming.dart';
 
-class TimeList extends StatelessWidget {
+import 'package:plan_lekcji/utils/theming.dart';
+import '/webscrapper/scrapper.dart';
+
+class TimeList extends StatefulWidget {
   const TimeList({super.key});
+
+  @override
+  State<TimeList> createState() => _TimeListState();
+}
+
+class _TimeListState extends State<TimeList> {
+  late AllLessons lessons;
+  List<Widget> lessonBoxes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    extractSinglePageData("o21").then((val) {
+      lessons = val!;
+      setState(() {
+        lessonBoxes = [
+          for (final i in lessons.lessonData)
+            _event(
+              time: "ok",
+              lesson: i.name,
+              teacher: i.teacher,
+              roomNumber: i.classroom,
+            ),
+        ];
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,48 +42,7 @@ class TimeList extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _event(
-                context,
-                time: "7:10 - 7:55",
-                lesson: "J. polski",
-                teacher: "Zbysio Matysia",
-                roomNumber: "107",
-              ),
-              _event(
-                context,
-                time: "8:00 - 8:45",
-                lesson: "J. polski",
-                teacher: "oke",
-                roomNumber: "107",
-              ),
-              _event(
-                context,
-                time: "8:55 - 9:40",
-                lesson: "J. polski",
-                teacher: "oke",
-                roomNumber: "107",
-              ),
-              _event(
-                context,
-                time: "9:50 - 10:35",
-                lesson: "J. polski",
-                teacher: "oke",
-                roomNumber: "107",
-              ),
-              _event(
-                context,
-                time: "10:45 - 11:30",
-                lesson: "J. polski",
-                teacher: "oke",
-                roomNumber: "107",
-              ),
-              _event(
-                context,
-                time: "11:40 - 12:25",
-                lesson: "J. polski",
-                teacher: "oke",
-                roomNumber: "107",
-              ),
+              ...lessonBoxes,
               SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
             ],
           ),
@@ -63,8 +51,7 @@ class TimeList extends StatelessWidget {
     );
   }
 
-  Widget _event(
-    BuildContext ctx, {
+  Widget _event({
     required String time,
     required String lesson,
     required String teacher,

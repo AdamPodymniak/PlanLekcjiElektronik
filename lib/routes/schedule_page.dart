@@ -28,7 +28,6 @@ class _SchedulePageState extends State<SchedulePage> {
             centerTitle: true,
             expandedHeight: 50,
             flexibleSpace: FlexibleSpaceBar(
-              expandedTitleScale: 1,
               centerTitle: true,
               title: Text(
                 weekday ?? "Plan lekcji",
