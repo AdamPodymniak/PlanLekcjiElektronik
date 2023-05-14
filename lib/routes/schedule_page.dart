@@ -19,6 +19,14 @@ class SchedulePage extends StatefulWidget {
 class _SchedulePageState extends State<SchedulePage> {
   String? weekday;
 
+  List<String> weekdays = [
+    "Poniedziałek",
+    "Wtorek",
+    "Środa",
+    "Czwartek",
+    "Piątek",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,11 +39,17 @@ class _SchedulePageState extends State<SchedulePage> {
             shadowColor: Theming.bgColor,
             pinned: true,
             centerTitle: true,
-            expandedHeight: 125,
+            expandedHeight: 110,
             title: Text(
-              weekday ?? "Brak",
+              weekday != null
+                  ? weekday!
+                  : DateTime.now().weekday > 5
+                      ? weekdays[0]
+                      : weekdays[DateTime.now().weekday - 1],
               style: const TextStyle(
                 color: Theming.primaryColor,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Theming.bgColor,
               ),
             ),
             flexibleSpace: FlexibleSpaceBar(

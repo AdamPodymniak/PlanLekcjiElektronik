@@ -12,9 +12,6 @@ class TimeList extends StatefulWidget {
 }
 
 class _TimeListState extends State<TimeList> {
-  List<AllLessons> lessons = [];
-  List<Widget> lessonBoxes = [];
-
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -24,6 +21,13 @@ class _TimeListState extends State<TimeList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              for (final e in widget.lessons)
+                _event(
+                  time: e.hour,
+                  lesson: e.name,
+                  teacher: e.teacher!,
+                  roomNumber: e.classroom!,
+                ),
               SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
             ],
           ),

@@ -16,7 +16,7 @@ class _WeekdayRowState extends State<WeekdayRow> {
   @override
   void initState() {
     super.initState();
-    selectedIndex = DateTime.now().weekday - 1;
+    selectedIndex = DateTime.now().weekday > 5 ? 0 : DateTime.now().weekday - 1;
   }
 
   @override
