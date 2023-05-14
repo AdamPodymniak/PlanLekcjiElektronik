@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import './teacher_list.dart';
 
 class LessonData {
   String name;
@@ -90,6 +91,9 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             final singleClassroomList = lesson2DList[j][i].querySelectorAll('.s').map((e)=>e.innerHtml.trim()).toList();
             if(singleLessonList.isNotEmpty){
               for(var k = 0; k < singleLessonList.length; k++){
+                teacherData.forEach((element) {
+                  if(element.simple == singleTeacherList[k]) singleTeacherList[k] = element.full;
+                });
                 LessonData data = LessonData(
                   name: singleLessonList[k],
                   classroom: singleClassroomList[k],
@@ -124,6 +128,9 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             final singleTeacherList = lesson2DList[j][i].querySelectorAll('.n').map((e)=>e.innerHtml.trim()).toList();
             if(singleLessonList.isNotEmpty){
               for(var k = 0; k < singleLessonList.length; k++){
+                teacherData.forEach((element) {
+                  if(element.simple == singleTeacherList[k]) singleTeacherList[k] = element.full;
+                });
                 LessonData data = LessonData(
                   name: singleLessonList[k],
                   teacher: singleTeacherList[k],
