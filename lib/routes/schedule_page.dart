@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
 import '../utils/theming.dart';
 import '../widgets/schedulepage/weekday_row.dart';
 import '../widgets/schedulepage/time_list.dart';
 
 class SchedulePage extends StatefulWidget {
-  const SchedulePage({super.key});
+  final AllLessons data;
+  const SchedulePage({
+    required this.data,
+    super.key,
+  });
 
   @override
   State<SchedulePage> createState() => _SchedulePageState();
@@ -26,11 +31,17 @@ class _SchedulePageState extends State<SchedulePage> {
             shadowColor: Theming.bgColor,
             pinned: true,
             centerTitle: true,
-            expandedHeight: 50,
+            expandedHeight: 125,
+            title: Text(
+              weekday ?? "Brak",
+              style: const TextStyle(
+                color: Theming.primaryColor,
+              ),
+            ),
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: true,
               title: Text(
-                weekday ?? "Plan lekcji",
+                widget.data.title!,
                 style: const TextStyle(
                   color: Theming.whiteTone,
                   fontSize: 20,
@@ -44,7 +55,7 @@ class _SchedulePageState extends State<SchedulePage> {
               setState(() => weekday = wd);
             },
           ),
-          const TimeList(),
+          TimeList(widget.data.lessonData),
         ],
       ),
     );

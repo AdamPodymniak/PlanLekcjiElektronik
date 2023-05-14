@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
 import '../utils/theming.dart';
 
@@ -14,10 +15,37 @@ class ScaffoldMenu extends StatefulWidget {
 class _ScaffoldMenuState extends State<ScaffoldMenu> {
   late int selectedIndex;
 
+  List<Widget> classes = [];
+
   @override
   void initState() {
     super.initState();
     selectedIndex = 0;
+    retrieveDataFromJSON().then((jsonVal) {
+      if (jsonVal != null) {
+        var tempClasses = <Widget>[];
+        for (final e in jsonVal) {
+          tempClasses.add(
+            _classPlaceholder(
+              data: e,
+            ),
+          );
+          setState(() => classes = tempClasses);
+        }
+        return;
+      }
+      extractAllData().then((val) {
+        var tempClasses = <Widget>[];
+        for (final e in val) {
+          tempClasses.add(
+            _classPlaceholder(
+              data: e,
+            ),
+          );
+          setState(() => classes = tempClasses);
+        }
+      });
+    });
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -38,68 +66,71 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
       drawer: Drawer(
         width: MediaQuery.of(context).size.width / 2 + 30,
         backgroundColor: Theming.bgColor,
-        child: Column(
-          children: [
-            Theme(
-              data: ThemeData(dividerColor: Colors.transparent),
-              child: DrawerHeader(
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(15),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Theme(
+                data: ThemeData(dividerColor: Colors.transparent),
+                child: DrawerHeader(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                    ),
+                    image: DecorationImage(
+                      image: AssetImage("assets/elektronik.jpg"),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  image: DecorationImage(
-                    image: AssetImage("assets/elektronik.jpg"),
-                    fit: BoxFit.cover,
+                  child: Container(
+                    height: 100,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(),
                   ),
-                ),
-                child: Container(
-                  height: 100,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    Text(
-                      "MENU",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theming.whiteTone.withOpacity(0.5),
-                        fontSize: 12,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(
+                        "MENU",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theming.whiteTone.withOpacity(0.5),
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    _menuItem(
-                      0,
-                      caption: "Plan lekcji",
-                      icon: Icons.calendar_month_outlined,
-                      route: "/",
-                    ),
-                    _menuItem(
-                      1,
-                      caption: "Wyszukiwarka",
-                      icon: Icons.search_rounded,
-                      route: "/browser",
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "KLASY",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theming.whiteTone.withOpacity(0.5),
-                        fontSize: 12,
+                      _menuItem(
+                        0,
+                        caption: "Plan lekcji",
+                        icon: Icons.calendar_month_outlined,
+                        route: "/",
                       ),
-                    ),
-                  ],
+                      _menuItem(
+                        1,
+                        caption: "Wyszukiwarka",
+                        icon: Icons.search_rounded,
+                        route: "/browser",
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        "KLASY",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theming.whiteTone.withOpacity(0.5),
+                          fontSize: 12,
+                        ),
+                      ),
+                      ...classes,
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       body: widget.child,
@@ -146,6 +177,24 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _classPlaceholder({required AllLessons data}) {
+    return Visibility(
+      visible: data.type == "class",
+      child: TextButton(
+        onPressed: () => context.go(
+          '/',
+          extra: data,
+        ),
+        child: Text(
+          data.title!,
+          style: const TextStyle(
+            color: Theming.whiteTone,
+          ),
         ),
       ),
     );
