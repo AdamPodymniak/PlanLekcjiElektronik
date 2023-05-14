@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LessonData {
   String name;
-  String classroom;
-  String teacher;
+  String? classroom;
+  String? teacher;
+  String? className;
   String hour;
   String day;
 
   LessonData({
     required this.name,
-    required this.classroom,
-    required this.teacher,
+    this.classroom,
+    this.teacher,
+    this.className,
     required this.hour,
     required this.day
   });
@@ -49,7 +50,7 @@ class AllLessons {
       };
 }
 
-Future<AllLessons?> extractSinglePageData(dynamic urlParam) async {
+Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
   try {
     List<LessonData> output = [];
     final url = Uri.parse("http://www.plan.elektronik.edu.pl/plany/$urlParam.html");
@@ -76,24 +77,63 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam) async {
           ]);
         }
       }
-
-      for (var i = 2; i < lesson2DList.length; i++) {
+      int n = 0;
+      for (var i = 2; i < lesson2DList[n].length; i++) {
         for (var j = 1; j < lesson2DList.length; j++) {
+          if(n==lesson2DList[j].length) n = 0;
+          else n++;
           final hour = lesson2DList[j][1];
           final day = lesson2DList[0][i];
-          final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e)=>e.innerHtml.trim()).toList();
-          final singleTeacherList = lesson2DList[j][i].querySelectorAll('.n').map((e)=>e.innerHtml.trim()).toList();
-          final singleClassroomList = lesson2DList[j][i].querySelectorAll('.s').map((e)=>e.innerHtml.trim()).toList();
-
-          for(var k = 0; k < singleLessonList.length; k++){
-            LessonData data = LessonData(
-              name: singleLessonList[k],
-              classroom: singleClassroomList[k],
-              teacher: singleTeacherList[k],
-              hour: hour,
-              day: day
-            );
-            output.add(data);
+          if(type == "class"){
+            final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e)=>e.innerHtml.trim()).toList();
+            final singleTeacherList = lesson2DList[j][i].querySelectorAll('.n').map((e)=>e.innerHtml.trim()).toList();
+            final singleClassroomList = lesson2DList[j][i].querySelectorAll('.s').map((e)=>e.innerHtml.trim()).toList();
+            if(singleLessonList.isNotEmpty){
+              for(var k = 0; k < singleLessonList.length; k++){
+                LessonData data = LessonData(
+                  name: singleLessonList[k],
+                  classroom: singleClassroomList[k],
+                  teacher: singleTeacherList[k],
+                  hour: hour,
+                  day: day
+                );
+                output.add(data);
+              }
+            }
+          }
+          if(type == "teacher"){
+            final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e)=>e.innerHtml.trim()).toList();
+            final singleClassList = lesson2DList[j][i].querySelectorAll('.o').map((e)=>e.innerHtml.trim()).toList();
+            final singleClassroomList = lesson2DList[j][i].querySelectorAll('.s').map((e)=>e.innerHtml.trim()).toList();
+            if(singleLessonList.isNotEmpty){
+              for(var k = 0; k < singleLessonList.length; k++){
+                LessonData data = LessonData(
+                  name: singleLessonList[k],
+                  classroom: singleClassroomList[k],
+                  className: singleClassList[k],
+                  hour: hour,
+                  day: day
+                );
+                output.add(data);
+              }
+            }
+          }
+          if(type == "classroom"){
+            final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e)=>e.innerHtml.trim()).toList();
+            final singleClassList = lesson2DList[j][i].querySelectorAll('.o').map((e)=>e.innerHtml.trim()).toList();
+            final singleTeacherList = lesson2DList[j][i].querySelectorAll('.n').map((e)=>e.innerHtml.trim()).toList();
+            if(singleLessonList.isNotEmpty){
+              for(var k = 0; k < singleLessonList.length; k++){
+                LessonData data = LessonData(
+                  name: singleLessonList[k],
+                  teacher: singleTeacherList[k],
+                  className: singleClassList[k],
+                  hour: hour,
+                  day: day
+                );
+                output.add(data);
+              }
+            }
           }
         }
       }
@@ -112,21 +152,21 @@ Future<List<AllLessons>> extractAllData() async {
 
   //extract classes
   for (int i = 1; i < 35; i++) {
-    var lessonData = await extractSinglePageData("o$i");
+    var lessonData = await extractSinglePageData("o$i", "class");
     lessonData?.type = "class";
     if (lessonData != null) allLessons.add(lessonData);
   }
 
   //extract teachers
   for (int i = 1; i < 102; i++) {
-    var lessonData = await extractSinglePageData("n$i");
+    var lessonData = await extractSinglePageData("n$i", "teacher");
     lessonData?.type = "teacher";
     if (lessonData != null) allLessons.add(lessonData);
   }
 
   //extract classrooms
   for (int i = 1; i < 65; i++) {
-    var lessonData = await extractSinglePageData("s$i");
+    var lessonData = await extractSinglePageData("s$i", "classroom");
     lessonData?.type = "classroom";
     if (lessonData != null) allLessons.add(lessonData);
   }
@@ -147,7 +187,6 @@ Future<List<AllLessons>?> retrieveDataFromJSON() async {
   final retrievedRawData = prefs.getString("lessons");
   if(retrievedRawData != null){
     final lessons = json.decode(retrievedRawData);
-
     for (var lesson in lessons) {
       List<LessonData> lessonData = [];
       for (var ld in lesson['lessonData']) {

@@ -17,7 +17,7 @@ class _TimeListState extends State<TimeList> {
   @override
   void initState() {
     super.initState();
-    extractSinglePageData("o21").then((val) {
+    extractSinglePageData("o21", "class").then((val) {
       lessons = val!;
       setState(() {
         lessonBoxes = [
@@ -25,8 +25,8 @@ class _TimeListState extends State<TimeList> {
             _event(
               time: "ok",
               lesson: i.name,
-              teacher: i.teacher,
-              roomNumber: i.classroom,
+              teacher: i.teacher!,
+              roomNumber: i.classroom!,
             ),
         ];
       });
