@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
+import '../webscrapper/scrapper.dart';
 import '../widgets/scaffold_menu.dart';
 import '../routes/schedule_page.dart';
-import '../routes/browser_page.dart';
+import '../routes/teachers_page.dart';
+import '../routes/classrooms_page.dart';
 
 GoRouter router = GoRouter(
   initialLocation: '/',
@@ -28,12 +29,18 @@ GoRouter router = GoRouter(
           },
         ),
         GoRoute(
-          path: '/browser',
+          path: '/teachers',
           pageBuilder: (_, state) {
             return pageTransition(
               state: state,
-              childWidget: const BrowserPage(),
+              childWidget: const TeachersPage(),
             );
+          },
+        ),
+        GoRoute(
+          path: '/classrooms',
+          pageBuilder: (_, state) {
+            return pageTransition(state: state, childWidget: const ClassroomsPage());
           },
         ),
       ],

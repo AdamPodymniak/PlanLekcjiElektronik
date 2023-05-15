@@ -62,8 +62,8 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
             children: [
               Theme(
                 data: ThemeData(dividerColor: Colors.transparent),
-                child: DrawerHeader(
-                  decoration: const BoxDecoration(
+                child: const DrawerHeader(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(15),
                     ),
@@ -72,10 +72,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Container(
+                  child: SizedBox(
                     height: 100,
                     width: double.infinity,
-                    decoration: const BoxDecoration(),
                   ),
                 ),
               ),
@@ -85,7 +84,37 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
+                      Container(
+                        height: 45,
+                        width: MediaQuery.of(context).size.width - 100,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Theming.whiteTone,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const TextField(
+                          cursorColor: Theming.primaryColor,
+                          textAlignVertical: TextAlignVertical.center,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: EdgeInsets.only(
+                              bottom: 3,
+                              right: 5,
+                            ),
+                            hintText: "Nauczyciel / Sala",
+                            hintStyle: TextStyle(fontSize: 15),
+                            prefixIcon: Padding(
+                              padding: EdgeInsets.zero,
+                              child: Icon(
+                                Icons.search_rounded,
+                                color: Theming.primaryColor,
+                                size: 24,
+                              ),
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
                       Text(
                         "MENU",
                         style: TextStyle(
@@ -102,11 +131,16 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                       ),
                       _menuItem(
                         1,
-                        caption: "Wyszukiwarka",
-                        icon: Icons.search_rounded,
-                        route: "/browser",
+                        caption: "Nauczyciele",
+                        icon: Icons.people_alt_rounded,
+                        route: "/teachers",
                       ),
-                      const SizedBox(height: 10),
+                      _menuItem(
+                        2,
+                        caption: "Sale lekcyjne",
+                        icon: Icons.meeting_room_rounded,
+                        route: "/classrooms",
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -119,19 +153,18 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {
-                              extractAllData().then((val) {
-                                var tempClasses = <Widget>[];
-                                for (int i = 0; i < val.length; i++) {
-                                  tempClasses.add(
-                                    _classPlaceholder(
-                                      i,
-                                      data: val[i],
-                                    ),
-                                  );
-                                  setState(() => classes = tempClasses);
-                                }
-                              });
+                            onPressed: () async {
+                              var val = await extractAllData();
+                              var tempClasses = <Widget>[];
+                              for (int i = 0; i < val.length; i++) {
+                                tempClasses.add(
+                                  _classPlaceholder(
+                                    i,
+                                    data: val[i],
+                                  ),
+                                );
+                              }
+                              setState(() => classes = tempClasses);
                             },
                             icon: Icon(
                               Icons.refresh,
@@ -225,7 +258,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
               );
 
               //TODO fix it
-              setState(() => selectedClassIndex = index);
+              setState(() {
+                selectedClassIndex = index;
+                selectedMenuIndex = 0;
+              });
             },
             child: Text(
               data.title!,

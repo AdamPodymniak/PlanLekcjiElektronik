@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '/utils/theming.dart';
 
 class WeekdayRow extends StatefulWidget {
-  final Function(String) onSelect;
+  final Function(int) onSelect;
   const WeekdayRow({required this.onSelect, super.key});
 
   @override
@@ -21,22 +21,20 @@ class _WeekdayRowState extends State<WeekdayRow> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              const SizedBox(width: 15),
-              _weekdayBox(0, "Poniedziałek"),
-              _weekdayBox(1, "Wtorek"),
-              _weekdayBox(2, "Środa"),
-              _weekdayBox(3, "Czwartek"),
-              _weekdayBox(4, "Piątek"),
-              const SizedBox(width: 15),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            const SizedBox(width: 15),
+            _weekdayBox(0, "Poniedziałek"),
+            _weekdayBox(1, "Wtorek"),
+            _weekdayBox(2, "Środa"),
+            _weekdayBox(3, "Czwartek"),
+            _weekdayBox(4, "Piątek"),
+            const SizedBox(width: 15),
+          ],
         ),
       ),
     );
@@ -49,7 +47,7 @@ class _WeekdayRowState extends State<WeekdayRow> {
     return GestureDetector(
       onTap: () {
         setState(() => selectedIndex = index);
-        widget.onSelect(caption);
+        widget.onSelect(selectedIndex);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

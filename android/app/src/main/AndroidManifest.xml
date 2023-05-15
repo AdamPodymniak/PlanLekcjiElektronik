@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.plan_lekcji">
+     <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="plan_lekcji"
         android:name="${applicationName}"
