@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
 import '../utils/theming.dart';
+import '../webscrapper/scrapper.dart';
 import '../widgets/schedulepage/weekday_row.dart';
-import '../widgets/schedulepage/time_list.dart';
 
-class SchedulePage extends StatefulWidget {
+class TeacherSchedulePage extends StatefulWidget {
   final AllLessons data;
-  const SchedulePage({
+  const TeacherSchedulePage({
     required this.data,
     super.key,
   });
 
   @override
-  State<SchedulePage> createState() => _SchedulePageState();
+  State<TeacherSchedulePage> createState() => _TeacherSchedulePageState();
 }
 
-class _SchedulePageState extends State<SchedulePage> {
+class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
   int weekdayIndex = 0;
-  List<String> weekdays = [
-    "Poniedziałek",
-    "Wtorek",
-    "Środa",
-    "Czwartek",
-    "Piątek",
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +47,6 @@ class _SchedulePageState extends State<SchedulePage> {
                 },
               ),
             ),
-          ),
-          TimeList(
-            day: weekdays[DateTime.now().weekday > 5 ? DateTime.now().weekday - 1 : weekdayIndex],
-            lessons: widget.data.lessonData,
           ),
         ],
       ),

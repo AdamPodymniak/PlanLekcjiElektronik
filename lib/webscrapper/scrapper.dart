@@ -58,7 +58,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
 
     if (response.statusCode != 404) {
       List<List<dynamic>> lesson2DList = [];
-      dom.Document html = dom.Document.html(response.body);
+      dom.Document html = dom.Document.html(utf8.decode(response.bodyBytes));
 
       final title = html.querySelector(".tytulnapis")?.innerHtml.trim();
 

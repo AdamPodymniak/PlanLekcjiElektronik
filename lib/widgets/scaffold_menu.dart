@@ -14,7 +14,6 @@ class ScaffoldMenu extends StatefulWidget {
 
 class _ScaffoldMenuState extends State<ScaffoldMenu> {
   late int selectedMenuIndex;
-  int? selectedClassIndex;
 
   List<Widget> classes = [];
 
@@ -36,6 +35,18 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         }
         return;
       }
+      extractAllData().then((val) {
+        var tempClasses = <Widget>[];
+        for (int i = 0; i < val.length; i++) {
+          tempClasses.add(
+            _classPlaceholder(
+              i,
+              data: val[i],
+            ),
+          );
+          setState(() => classes = tempClasses);
+        }
+      });
     });
   }
 
@@ -126,7 +137,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                       _menuItem(
                         0,
                         caption: "Plan lekcji",
-                        icon: Icons.calendar_month_outlined,
+                        icon: Icons.calendar_month_rounded,
                         route: "/",
                       ),
                       _menuItem(
@@ -234,22 +245,11 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   }
 
   Widget _classPlaceholder(int index, {required AllLessons data}) {
-    bool isSelected = selectedClassIndex == index;
-
     return Visibility(
       visible: data.type == "class",
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Visibility(
-            visible: isSelected,
-            child: Container(
-              height: 5,
-              width: 5,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
           TextButton(
             onPressed: () {
               context.go(
@@ -257,18 +257,21 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                 extra: data,
               );
 
-              //TODO fix it
-              setState(() {
-                selectedClassIndex = index;
-                selectedMenuIndex = 0;
-              });
+              setState(() => selectedMenuIndex = 0);
             },
             child: Text(
               data.title!,
-              style: TextStyle(
-                color: isSelected ? Theming.primaryColor : Theming.whiteTone,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              style: const TextStyle(
+                color: Theming.whiteTone,
+                fontWeight: FontWeight.bold,
               ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.star_border_rounded,
+              color: Theming.whiteTone.withOpacity(0.4),
             ),
           ),
         ],

@@ -50,7 +50,7 @@ class _TimeListState extends State<TimeList> {
     required String day,
   }) {
     return Visibility(
-      ///TODO visible: day == widget.day,
+      visible: day == widget.day,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 25),
         child: SingleChildScrollView(
