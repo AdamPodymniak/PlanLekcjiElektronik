@@ -1,38 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'package:plan_lekcji/utils/theming.dart';
+import '/utils/theming.dart';
 import '/webscrapper/scrapper.dart';
 
 class TimeList extends StatefulWidget {
-  const TimeList({super.key});
+  final List<LessonData> lessons;
+  const TimeList(this.lessons, {super.key});
 
   @override
   State<TimeList> createState() => _TimeListState();
 }
 
 class _TimeListState extends State<TimeList> {
-  late AllLessons lessons;
-  List<Widget> lessonBoxes = [];
-
-  @override
-  void initState() {
-    super.initState();
-    extractSinglePageData("o21", "class").then((val) {
-      lessons = val!;
-      setState(() {
-        lessonBoxes = [
-          for (final i in lessons.lessonData)
-            _event(
-              time: "ok",
-              lesson: i.name,
-              teacher: i.teacher!,
-              roomNumber: i.classroom!,
-            ),
-        ];
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -42,7 +21,13 @@ class _TimeListState extends State<TimeList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ...lessonBoxes,
+              for (final e in widget.lessons)
+                _event(
+                  time: e.hour,
+                  lesson: e.name,
+                  teacher: e.teacher!,
+                  roomNumber: e.classroom!,
+                ),
               SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
             ],
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
 import '../widgets/scaffold_menu.dart';
 import '../routes/schedule_page.dart';
@@ -16,7 +17,13 @@ GoRouter router = GoRouter(
           pageBuilder: (_, state) {
             return pageTransition(
               state: state,
-              childWidget: const SchedulePage(),
+              childWidget: SchedulePage(
+                data: state.extra as AllLessons? ??
+                    AllLessons(
+                      title: "Plan lekcji",
+                      lessonData: [],
+                    ),
+              ),
             );
           },
         ),

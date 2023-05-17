@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
 import '../utils/router.dart';
 import '../utils/theming.dart';
