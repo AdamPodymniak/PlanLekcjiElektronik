@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/theming.dart';
 import '../webscrapper/scrapper.dart';
 import '../widgets/schedulepage/weekday_row.dart';
+import '../widgets/schedulepage/time_list.dart';
 
 class TeacherSchedulePage extends StatefulWidget {
   final AllLessons data;
@@ -17,6 +18,13 @@ class TeacherSchedulePage extends StatefulWidget {
 
 class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
   int weekdayIndex = 0;
+  List<String> weekdays = [
+    "Poniedziałek",
+    "Wtorek",
+    "Środa",
+    "Czwartek",
+    "Piątek",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +55,10 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
                 },
               ),
             ),
+          ),
+          TimeList(
+            day: weekdays[DateTime.now().weekday > 5 ? DateTime.now().weekday - 1 : weekdayIndex],
+            lessons: widget.data,
           ),
         ],
       ),

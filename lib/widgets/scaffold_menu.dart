@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:plan_lekcji/webscrapper/scrapper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/theming.dart';
 
@@ -14,6 +15,7 @@ class ScaffoldMenu extends StatefulWidget {
 
 class _ScaffoldMenuState extends State<ScaffoldMenu> {
   late int selectedMenuIndex;
+  String? favClass;
 
   List<Widget> classes = [];
 
@@ -27,7 +29,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         for (int i = 0; i < jsonVal.length; i++) {
           tempClasses.add(
             _classPlaceholder(
-              i,
               data: jsonVal[i],
             ),
           );
@@ -40,13 +41,15 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         for (int i = 0; i < val.length; i++) {
           tempClasses.add(
             _classPlaceholder(
-              i,
               data: val[i],
             ),
           );
           setState(() => classes = tempClasses);
         }
       });
+    });
+    SharedPreferences.getInstance().then((prefs) {
+      favClass = prefs.getString("favourite");
     });
   }
 
@@ -95,37 +98,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 45,
-                        width: MediaQuery.of(context).size.width - 100,
-                        margin: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Theming.whiteTone,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const TextField(
-                          cursorColor: Theming.primaryColor,
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding: EdgeInsets.only(
-                              bottom: 3,
-                              right: 5,
-                            ),
-                            hintText: "Nauczyciel / Sala",
-                            hintStyle: TextStyle(fontSize: 15),
-                            prefixIcon: Padding(
-                              padding: EdgeInsets.zero,
-                              child: Icon(
-                                Icons.search_rounded,
-                                color: Theming.primaryColor,
-                                size: 24,
-                              ),
-                            ),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
                       Text(
                         "MENU",
                         style: TextStyle(
@@ -136,7 +108,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                       ),
                       _menuItem(
                         0,
-                        caption: "Plan lekcji",
+                        caption: "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
                         icon: Icons.calendar_month_rounded,
                         route: "/",
                       ),
@@ -169,10 +141,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                               var tempClasses = <Widget>[];
                               for (int i = 0; i < val.length; i++) {
                                 tempClasses.add(
-                                  _classPlaceholder(
-                                    i,
-                                    data: val[i],
-                                  ),
+                                  _classPlaceholder(data: val[i]),
                                 );
                               }
                               setState(() => classes = tempClasses);
@@ -244,7 +213,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     );
   }
 
-  Widget _classPlaceholder(int index, {required AllLessons data}) {
+  Widget _classPlaceholder({required AllLessons data}) {
+    bool isFavourite = favClass == data.title;
+
     return Visibility(
       visible: data.type == "class",
       child: Row(
@@ -268,10 +239,14 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              var prefs = await SharedPreferences.getInstance();
+              await prefs.setString("favourite", data.title!);
+              setState(() => favClass = data.title!);
+            },
             icon: Icon(
-              Icons.star_border_rounded,
-              color: Theming.whiteTone.withOpacity(0.4),
+              isFavourite ? Icons.star_rounded : Icons.star_border_rounded,
+              color: isFavourite ? Colors.yellow : Theming.whiteTone.withOpacity(0.4),
             ),
           ),
         ],

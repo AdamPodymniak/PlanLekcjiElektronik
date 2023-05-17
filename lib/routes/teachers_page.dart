@@ -74,7 +74,7 @@ class _TeachersPageState extends State<TeachersPage> {
       child: GestureDetector(
         onTap: () => context.push(
           "/teacher-schedule",
-          extra: null,
+          extra: data,
         ),
         child: Row(
           children: [

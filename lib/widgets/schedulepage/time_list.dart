@@ -5,9 +5,11 @@ import '/webscrapper/scrapper.dart';
 
 class TimeList extends StatefulWidget {
   final String day;
-  final List<LessonData> lessons;
+  final String? className;
+  final AllLessons lessons;
   const TimeList({
     required this.day,
+    this.className,
     required this.lessons,
     super.key,
   });
@@ -26,14 +28,7 @@ class _TimeListState extends State<TimeList> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final e in widget.lessons)
-                _event(
-                  time: e.hour,
-                  lesson: e.name,
-                  teacher: e.teacher!,
-                  roomNumber: e.classroom!,
-                  day: e.day,
-                ),
+              for (final e in widget.lessons.lessonData) _event(data: e),
               SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
             ],
           ),
@@ -43,14 +38,10 @@ class _TimeListState extends State<TimeList> {
   }
 
   Widget _event({
-    required String time,
-    required String lesson,
-    required String teacher,
-    required String roomNumber,
-    required String day,
+    required LessonData data,
   }) {
     return Visibility(
-      visible: day == widget.day,
+      visible: data.day == widget.day,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 25),
         child: SingleChildScrollView(
@@ -58,7 +49,7 @@ class _TimeListState extends State<TimeList> {
           child: Row(
             children: [
               Text(
-                time,
+                data.hour,
                 style: TextStyle(
                   color: Theming.whiteTone.withOpacity(0.3),
                   fontWeight: FontWeight.bold,
@@ -92,7 +83,7 @@ class _TimeListState extends State<TimeList> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          lesson,
+                          data.name,
                           style: const TextStyle(
                             color: Theming.whiteTone,
                             fontWeight: FontWeight.bold,
@@ -102,13 +93,13 @@ class _TimeListState extends State<TimeList> {
                         Row(
                           children: [
                             Text(
-                              teacher,
+                              data.teacher ?? "",
                               style: const TextStyle(
                                 color: Theming.whiteTone,
                               ),
                             ),
                             Text(
-                              " • sala $roomNumber",
+                              data.classroom != null ? "• sala ${data.classroom}" : "",
                               style: const TextStyle(
                                 color: Theming.whiteTone,
                               ),

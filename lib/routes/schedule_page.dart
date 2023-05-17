@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plan_lekcji/webscrapper/scrapper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/theming.dart';
 import '../widgets/schedulepage/weekday_row.dart';
@@ -25,6 +26,16 @@ class _SchedulePageState extends State<SchedulePage> {
     "Czwartek",
     "Piątek",
   ];
+
+  String? favClass;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      favClass = prefs.getString("favourite");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +69,7 @@ class _SchedulePageState extends State<SchedulePage> {
           ),
           TimeList(
             day: weekdays[DateTime.now().weekday > 5 ? DateTime.now().weekday - 1 : weekdayIndex],
-            lessons: widget.data.lessonData,
+            lessons: widget.data,
           ),
         ],
       ),
