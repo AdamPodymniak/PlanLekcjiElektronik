@@ -48,7 +48,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
       List<List<dynamic>> lesson2DList = [];
       dom.Document html = dom.Document.html(utf8.decode(response.bodyBytes));
 
-      final title = html.querySelector(".tytulnapis")?.innerHtml.trim();
+      var title = html.querySelector(".tytulnapis")?.innerHtml.trim();
 
       final lessons = html.querySelectorAll("body > div > table > tbody > tr > td > table > tbody > tr").toList();
 
@@ -99,6 +99,9 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
                 lesson2DList[j][i].querySelectorAll('.s').map((e) => e.innerHtml.trim()).toList();
             if (singleLessonList.isNotEmpty) {
               for (var k = 0; k < singleLessonList.length; k++) {
+                teacherData.forEach((element) {
+                  if(element.simple == title) title = element.full;
+                });
                 LessonData data = LessonData(
                     name: singleLessonList[k],
                     classroom: singleClassroomList[k],

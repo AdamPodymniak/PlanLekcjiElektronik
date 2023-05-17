@@ -16,14 +16,17 @@ class ScaffoldMenu extends StatefulWidget {
 class _ScaffoldMenuState extends State<ScaffoldMenu> {
   late int selectedMenuIndex;
   String? favClass;
+  List<LessonData> favClassData = [];
 
   List<Widget> classes = [];
 
+  List<AllLessons>? allLessons;
   @override
   void initState() {
     super.initState();
     selectedMenuIndex = 0;
     retrieveDataFromJSON().then((jsonVal) {
+      allLessons = jsonVal;
       if (jsonVal != null) {
         var tempClasses = <Widget>[];
         for (int i = 0; i < jsonVal.length; i++) {
@@ -37,6 +40,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         return;
       }
       extractAllData().then((val) {
+        allLessons = val;
         var tempClasses = <Widget>[];
         for (int i = 0; i < val.length; i++) {
           tempClasses.add(
@@ -50,6 +54,20 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     });
     SharedPreferences.getInstance().then((prefs) {
       favClass = prefs.getString("favourite");
+      for (final cls in allLessons!) {
+        if (cls.title == favClass) {
+          favClassData = cls.lessonData;
+        }
+      }
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.go(
+          "/",
+          extra: AllLessons(
+            title: favClass,
+            lessonData: favClassData,
+          ),
+        ),
+      );
     });
   }
 
@@ -113,7 +131,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                         route: "/",
                         extra: AllLessons(
                           title: favClass,
-                          lessonData: [],
+                          lessonData: favClassData,
                         ),
                       ),
                       _menuItem(
@@ -249,6 +267,11 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
             onPressed: () async {
               var prefs = await SharedPreferences.getInstance();
               await prefs.setString("favourite", data.title!);
+              for (final cls in allLessons!) {
+                if (cls.title == favClass) {
+                  setState(() => favClassData = cls.lessonData);
+                }
+              }
               setState(() => favClass = data.title!);
             },
             icon: Icon(
