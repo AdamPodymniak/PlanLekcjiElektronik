@@ -16,17 +16,17 @@ class ScaffoldMenu extends StatefulWidget {
 class _ScaffoldMenuState extends State<ScaffoldMenu> {
   late int selectedMenuIndex;
   String? favClass;
+
   List<LessonData> favClassData = [];
-
   List<Widget> classes = [];
+  List<AllLessons>? savedLessons;
 
-  List<AllLessons>? allLessons;
   @override
   void initState() {
     super.initState();
     selectedMenuIndex = 0;
     retrieveDataFromJSON().then((jsonVal) {
-      allLessons = jsonVal;
+      savedLessons = jsonVal;
       if (jsonVal != null) {
         var tempClasses = <Widget>[];
         for (int i = 0; i < jsonVal.length; i++) {
@@ -40,7 +40,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         return;
       }
       extractAllData().then((val) {
-        allLessons = val;
+        savedLessons = val;
         var tempClasses = <Widget>[];
         for (int i = 0; i < val.length; i++) {
           tempClasses.add(
@@ -54,9 +54,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     });
     SharedPreferences.getInstance().then((prefs) {
       favClass = prefs.getString("favourite");
-      for (final cls in allLessons!) {
+      for (final cls in savedLessons!) {
         if (cls.title == favClass) {
           favClassData = cls.lessonData;
+          break;
         }
       }
       WidgetsBinding.instance.addPostFrameCallback(
@@ -239,7 +240,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   Widget _classPlaceholder({
     required AllLessons data,
   }) {
-    bool isFavourite = favClass == data.title;
+    bool isFavourite = favClass == data.title!;
 
     return Visibility(
       visible: data.type == "class",
@@ -252,7 +253,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                 '/',
                 extra: data,
               );
-
               setState(() => selectedMenuIndex = 0);
             },
             child: Text(
@@ -267,9 +267,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
             onPressed: () async {
               var prefs = await SharedPreferences.getInstance();
               await prefs.setString("favourite", data.title!);
-              for (final cls in allLessons!) {
+              for (final cls in savedLessons!) {
                 if (cls.title == favClass) {
-                  setState(() => favClassData = cls.lessonData);
+                  favClassData = cls.lessonData;
                 }
               }
               setState(() => favClass = data.title!);

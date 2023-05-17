@@ -5,11 +5,9 @@ import '/webscrapper/scrapper.dart';
 
 class TimeList extends StatefulWidget {
   final String day;
-  final String? className;
   final AllLessons lessons;
   const TimeList({
     required this.day,
-    this.className,
     required this.lessons,
     super.key,
   });

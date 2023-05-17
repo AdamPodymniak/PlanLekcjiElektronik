@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../utils/theming.dart';
 import '../webscrapper/scrapper.dart';
-import '../widgets/schedulepage/weekday_row.dart';
-import '../widgets/schedulepage/time_list.dart';
+import '../widgets/weekday_row.dart';
+import '../widgets/time_list.dart';
 
 class ClassroomSchedulePage extends StatefulWidget {
   final AllLessons data;
