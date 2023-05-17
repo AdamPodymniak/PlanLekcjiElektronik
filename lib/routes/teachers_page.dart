@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
+import '../webscrapper/scrapper.dart';
 import '../utils/theming.dart';
 
 class TeachersPage extends StatefulWidget {
