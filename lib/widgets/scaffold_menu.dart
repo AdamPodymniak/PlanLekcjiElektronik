@@ -111,6 +111,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                         caption: "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
                         icon: Icons.calendar_month_rounded,
                         route: "/",
+                        extra: AllLessons(
+                          title: favClass,
+                          lessonData: [],
+                        ),
                       ),
                       _menuItem(
                         1,
@@ -173,6 +177,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     required String caption,
     required IconData icon,
     required String route,
+    Object? extra,
   }) {
     bool isSelected = selectedMenuIndex == index;
 
@@ -180,7 +185,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
       onTap: () {
         setState(() => selectedMenuIndex = index);
         Navigator.of(context).pop();
-        context.go(route);
+        context.go(route, extra: extra);
       },
       child: AnimatedContainer(
         curve: Curves.linearToEaseOut,
@@ -213,7 +218,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     );
   }
 
-  Widget _classPlaceholder({required AllLessons data}) {
+  Widget _classPlaceholder({
+    required AllLessons data,
+  }) {
     bool isFavourite = favClass == data.title;
 
     return Visibility(

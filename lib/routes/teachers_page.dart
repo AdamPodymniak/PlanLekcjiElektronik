@@ -26,7 +26,6 @@ class _TeachersPageState extends State<TeachersPage> {
           );
         }
         setState(() => teachers = tempTeachers);
-        return;
       }
     });
   }
