@@ -17,8 +17,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  String? weekday;
-
+  int weekdayIndex = 0;
   List<String> weekdays = [
     "Poniedziałek",
     "Wtorek",
@@ -39,37 +38,28 @@ class _SchedulePageState extends State<SchedulePage> {
             shadowColor: Theming.bgColor,
             pinned: true,
             centerTitle: true,
-            expandedHeight: 110,
+            expandedHeight: 140,
             title: Text(
-              weekday != null
-                  ? weekday!
-                  : DateTime.now().weekday > 5
-                      ? weekdays[0]
-                      : weekdays[DateTime.now().weekday - 1],
+              widget.data.title!,
               style: const TextStyle(
                 color: Theming.primaryColor,
                 fontWeight: FontWeight.bold,
                 backgroundColor: Theming.bgColor,
               ),
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: Text(
-                widget.data.title!,
-                style: const TextStyle(
-                  color: Theming.whiteTone,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(56),
+              child: WeekdayRow(
+                onSelect: (wd) {
+                  setState(() => weekdayIndex = wd);
+                },
               ),
             ),
           ),
-          WeekdayRow(
-            onSelect: (wd) {
-              setState(() => weekday = wd);
-            },
+          TimeList(
+            day: weekdays[DateTime.now().weekday > 5 ? DateTime.now().weekday - 1 : weekdayIndex],
+            lessons: widget.data.lessonData,
           ),
-          TimeList(widget.data.lessonData),
         ],
       ),
     );

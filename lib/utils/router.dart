@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:plan_lekcji/webscrapper/scrapper.dart';
 
+import '../webscrapper/scrapper.dart';
 import '../widgets/scaffold_menu.dart';
 import '../routes/schedule_page.dart';
-import '../routes/browser_page.dart';
+import '../routes/teachers_page.dart';
+import '../routes/classrooms_page.dart';
+import '../routes/classroom_schedule_page.dart';
+import '../routes/teacher_schedule_page.dart';
 
 GoRouter router = GoRouter(
   initialLocation: '/',
@@ -28,11 +31,50 @@ GoRouter router = GoRouter(
           },
         ),
         GoRoute(
-          path: '/browser',
+          path: '/teachers',
           pageBuilder: (_, state) {
             return pageTransition(
               state: state,
-              childWidget: const BrowserPage(),
+              childWidget: const TeachersPage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/classrooms',
+          pageBuilder: (_, state) {
+            return pageTransition(
+              state: state,
+              childWidget: const ClassroomsPage(),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/classroom-schedule',
+          pageBuilder: (_, state) {
+            return pageTransition(
+              state: state,
+              childWidget: ClassroomSchedulePage(
+                data: state.extra as AllLessons? ??
+                    AllLessons(
+                      title: "Plan lekcji",
+                      lessonData: [],
+                    ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/teacher-schedule',
+          pageBuilder: (_, state) {
+            return pageTransition(
+              state: state,
+              childWidget: TeacherSchedulePage(
+                data: state.extra as AllLessons? ??
+                    AllLessons(
+                      title: "Plan lekcji",
+                      lessonData: [],
+                    ),
+              ),
             );
           },
         ),
