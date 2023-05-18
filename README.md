@@ -1,5 +1,7 @@
 # Web Scraper Planu Lekcji Elektronika
 
+Aby pobrać aplikację na swój telefon, trzeba wejść w zakładkę "release", wybrać app.release.apk i postępować według instrukcji prezentowanych przez sytem
+
 ## Spis Treści
 
 - [Opis projektu](#opis-projektu)
