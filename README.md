@@ -71,8 +71,6 @@ Aby skonfigurować aplikację i dostosować ją do konkretnej szkoły, wykonaj p
 
 3. Zapisz plik `config.dart` po dokonaniu zmian.
 
-Oczywiście! Poniżej znajduje się dodatkowy fragment dotyczący kontrybucji:
-
 ## Kontrybucja
 
 Jesteśmy otwarci na kontrybucje do projektu. Jeśli masz pomysły na ulepszenie aplikacji, naprawę błędów lub dodanie nowych funkcji, z przyjemnością przyjmiemy Twoje zgłoszenia. Aby przyczynić się do projektu, postępuj zgodnie z poniższymi krokami:
