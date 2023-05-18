@@ -15,16 +15,20 @@ class ScaffoldMenu extends StatefulWidget {
 
 class _ScaffoldMenuState extends State<ScaffoldMenu> {
   late int selectedMenuIndex;
-  String? favClass;
+  late TextEditingController _searchCtrl;
 
+  String? favClass;
   List<LessonData> favClassData = [];
-  List<Widget> classes = [];
   List<AllLessons>? savedLessons;
+
+  List<Widget> classes = [];
+  List<Widget> searchItems = [];
 
   @override
   void initState() {
     super.initState();
     selectedMenuIndex = 0;
+    _searchCtrl = TextEditingController();
     retrieveDataFromJSON().then((jsonVal) {
       if (jsonVal != null) {
         savedLessons = jsonVal;
@@ -72,6 +76,12 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     });
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _searchCtrl.dispose();
+  }
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -117,6 +127,55 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        height: 30,
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          color: Theming.whiteTone,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: TextField(
+                            onChanged: (val) {
+                              searchItems = [];
+                              final tempSearches = <Widget>[];
+                              for (final e in savedLessons!) {
+                                if (e.title!.contains(val.toUpperCase())) {
+                                  tempSearches.add(
+                                    _searchItem(data: e),
+                                  );
+                                }
+                              }
+                              if (val.isEmpty) {
+                                setState(() => searchItems = []);
+                                return;
+                              }
+                              setState(() => searchItems = tempSearches);
+                            },
+                            controller: _searchCtrl,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                            cursorColor: Theming.primaryColor,
+                            cursorHeight: 20,
+                            decoration: const InputDecoration(
+                              isCollapsed: true,
+                              hintText: "klasa / nauczyciel / sala",
+                              hintStyle: TextStyle(
+                                fontSize: 12,
+                              ),
+                              icon: Icon(
+                                Icons.search_rounded,
+                                color: Theming.primaryColor,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                      ),
                       Text(
                         "MENU",
                         style: TextStyle(
@@ -178,7 +237,21 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                           ),
                         ],
                       ),
-                      ...classes,
+                      searchItems.isEmpty
+                          ? Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: classes,
+                              ),
+                            )
+                          : Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: searchItems,
+                              ),
+                            ),
                       SizedBox(
                         height: MediaQuery.of(context).viewPadding.bottom + 30,
                       ),
@@ -283,6 +356,34 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _searchItem({required AllLessons data}) {
+    return TextButton(
+      onPressed: () {
+        if (data.type == "class") {
+          context.go("/", extra: data);
+          return;
+        }
+
+        if (data.type == "teacher") {
+          context.push("/teacher-schedule", extra: data);
+          return;
+        }
+
+        if (data.type == "classroom") {
+          context.push("/classroom-schedule", extra: data);
+          return;
+        }
+      },
+      child: Text(
+        data.title!,
+        style: const TextStyle(
+          color: Theming.whiteTone,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
