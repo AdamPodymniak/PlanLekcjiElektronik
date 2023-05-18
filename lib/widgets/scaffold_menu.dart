@@ -26,8 +26,8 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     super.initState();
     selectedMenuIndex = 0;
     retrieveDataFromJSON().then((jsonVal) {
-      savedLessons = jsonVal;
       if (jsonVal != null) {
+        savedLessons = jsonVal;
         var tempClasses = <Widget>[];
         for (int i = 0; i < jsonVal.length; i++) {
           tempClasses.add(
@@ -127,7 +127,8 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                       ),
                       _menuItem(
                         0,
-                        caption: "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
+                        caption:
+                            "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
                         icon: Icons.calendar_month_rounded,
                         route: "/",
                         extra: AllLessons(
@@ -178,7 +179,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                         ],
                       ),
                       ...classes,
-                      SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 30),
+                      SizedBox(
+                        height: MediaQuery.of(context).viewPadding.bottom + 30,
+                      ),
                     ],
                   ),
                 ),
@@ -240,8 +243,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   Widget _classPlaceholder({
     required AllLessons data,
   }) {
-    bool isFavourite = favClass == data.title!;
-
     return Visibility(
       visible: data.type == "class",
       child: Row(
@@ -265,18 +266,20 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
           ),
           IconButton(
             onPressed: () async {
-              var prefs = await SharedPreferences.getInstance();
+              final prefs = await SharedPreferences.getInstance();
               await prefs.setString("favourite", data.title!);
+
               for (final cls in savedLessons!) {
-                if (cls.title == favClass) {
+                if (cls.title == data.title) {
                   favClassData = cls.lessonData;
+                  break;
                 }
               }
               setState(() => favClass = data.title!);
             },
-            icon: Icon(
-              isFavourite ? Icons.star_rounded : Icons.star_border_rounded,
-              color: isFavourite ? Colors.yellow : Theming.whiteTone.withOpacity(0.4),
+            icon: const Icon(
+              Icons.star_rounded,
+              color: Colors.yellow,
             ),
           ),
         ],
