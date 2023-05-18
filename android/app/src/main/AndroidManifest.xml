@@ -2,7 +2,7 @@
     package="com.example.plan_lekcji">
      <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="plan_lekcji"
+        android:label="Plan lekcji"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

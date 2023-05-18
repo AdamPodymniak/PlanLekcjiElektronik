@@ -128,7 +128,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        height: 30,
+                        height: 40,
                         width: double.infinity,
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         alignment: Alignment.centerLeft,
@@ -157,15 +157,15 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                             },
                             controller: _searchCtrl,
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                             ),
                             cursorColor: Theming.primaryColor,
                             cursorHeight: 20,
                             decoration: const InputDecoration(
                               isCollapsed: true,
-                              hintText: "klasa / nauczyciel / sala",
+                              hintText: "Szukaj",
                               hintStyle: TextStyle(
-                                fontSize: 12,
+                                fontSize: 14,
                               ),
                               icon: Icon(
                                 Icons.search_rounded,
@@ -329,11 +329,18 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
               );
               setState(() => selectedMenuIndex = 0);
             },
-            child: Text(
-              data.title!,
-              style: const TextStyle(
-                color: Theming.whiteTone,
-                fontWeight: FontWeight.bold,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 55,
+                top: 10,
+                bottom: 10,
+              ),
+              child: Text(
+                data.title!,
+                style: const TextStyle(
+                  color: Theming.whiteTone,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -378,11 +385,18 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
           return;
         }
       },
-      child: Text(
-        data.title!,
-        style: const TextStyle(
-          color: Theming.whiteTone,
-          fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          right: 55,
+          top: 10,
+          bottom: 10,
+        ),
+        child: Text(
+          data.title!,
+          style: const TextStyle(
+            color: Theming.whiteTone,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

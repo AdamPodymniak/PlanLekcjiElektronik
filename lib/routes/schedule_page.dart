@@ -57,7 +57,9 @@ class _SchedulePageState extends State<SchedulePage> {
             ),
           ),
           TimeList(
-            day: weekdays[DateTime.now().weekday > 5 ? DateTime.now().weekday - 1 : weekdayIndex],
+            day: weekdays[DateTime.now().weekday > 5
+                ? DateTime.now().weekday - 1
+                : weekdayIndex],
             lessons: widget.data,
           ),
         ],
