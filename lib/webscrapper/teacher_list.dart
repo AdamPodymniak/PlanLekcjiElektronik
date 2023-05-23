@@ -13,7 +13,7 @@ List<TeacherData> teacherData = [
   TeacherData(simple: 'RF', full: 'R.FIGURA'),
   TeacherData(simple: 'AM', full: 'M.ADAMCZYK'),
   TeacherData(simple: 'BB', full: 'B.BAKINOWSKA-MARCHEWKA'),
-  TeacherData(simple: 'DB', full: 'D.Banach'),
+  TeacherData(simple: 'DB', full: 'D.BANACH'),
   TeacherData(simple: 'GB', full: 'G.BARSZCZ'),
   TeacherData(simple: 'BZ', full: 'K.BAŻYNSKI'),
   TeacherData(simple: 'AD', full: 'A.BESTER'),

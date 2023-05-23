@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:plan_lekcji/webscrapper/scrapper.dart';
-import 'package:plan_lekcji/widgets/glass_morphism.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../webscrapper/scrapper.dart';
+import '../widgets/glass_morphism.dart';
 import '../utils/theming.dart';
 
 class ScaffoldMenu extends StatefulWidget {
@@ -23,7 +23,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   List<LessonData> favClassData = [];
   List<AllLessons>? savedLessons;
 
-  List<Widget> classes = [];
+  List<Widget> results = [];
   List<Widget> searchItems = [];
 
   late String searchingFor;
@@ -40,29 +40,29 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     retrieveDataFromJSON().then((jsonVal) {
       if (jsonVal != null) {
         savedLessons = jsonVal;
-        var tempClasses = <Widget>[];
+        final tempItems = <Widget>[];
         for (int i = 0; i < jsonVal.length; i++) {
-          tempClasses.add(
-            _classPlaceholder(
+          tempItems.add(
+            _categoryItemPlaceholder(
               data: jsonVal[i],
             ),
           );
-          setState(() => classes = tempClasses);
+          setState(() => results = tempItems);
         }
         return;
       }
       isRefreshing = true;
       extractAllData().then((val) {
         savedLessons = val;
-        var tempClasses = <Widget>[];
+        var tempItems = <Widget>[];
         for (int i = 0; i < val.length; i++) {
-          tempClasses.add(
-            _classPlaceholder(
+          tempItems.add(
+            _categoryItemPlaceholder(
               data: val[i],
             ),
           );
           setState(() {
-            classes = tempClasses;
+            results = tempItems;
             isRefreshing = false;
           });
         }
@@ -238,11 +238,11 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                               "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
                           icon: Icons.calendar_month_rounded,
                           route: "/",
+                          searchType: "class",
                           extra: AllLessons(
                             title: favClass,
                             lessonData: favClassData,
                           ),
-                          searchType: "class",
                         ),
                         _menuItem(
                           1,
@@ -272,15 +272,15 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                             IconButton(
                               onPressed: () async {
                                 setState(() => isRefreshing = true);
-                                var val = await extractAllData();
-                                var tempClasses = <Widget>[];
+                                final val = await extractAllData();
+                                final tempClasses = <Widget>[];
                                 for (int i = 0; i < val.length; i++) {
                                   tempClasses.add(
-                                    _classPlaceholder(data: val[i]),
+                                    _categoryItemPlaceholder(data: val[i]),
                                   );
                                 }
                                 setState(() {
-                                  classes = tempClasses;
+                                  results = tempClasses;
                                   isRefreshing = false;
                                 });
                               },
@@ -307,7 +307,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: classes,
+                                      children: results,
                                     ),
                                   )
                                 : Align(
@@ -347,9 +347,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
 
     return GestureDetector(
       onTap: () {
-        searchingFor = searchType;
-        setState(() => selectedMenuIndex = index);
-        Navigator.of(context).pop();
+        setState(() {
+          selectedMenuIndex = index;
+          searchingFor = searchType;
+        });
         context.go(route, extra: extra);
       },
       child: AnimatedContainer(
@@ -383,13 +384,13 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     );
   }
 
-  Widget _classPlaceholder({
+  Widget _categoryItemPlaceholder({
     required AllLessons data,
   }) {
     bool isFavourite = data.title! == favClass;
 
     return Visibility(
-      visible: data.type == "class",
+      visible: data.type == searchingFor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -400,7 +401,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                 '/',
                 extra: data,
               );
-              setState(() => selectedMenuIndex = 0);
             },
             child: Padding(
               padding: const EdgeInsets.only(

@@ -19,7 +19,7 @@ class _TeachersPageState extends State<TeachersPage> {
     super.initState();
     retrieveDataFromJSON().then((jsonVal) {
       if (jsonVal != null) {
-        var tempTeachers = <Widget>[];
+        final tempTeachers = <Widget>[];
         for (int i = 0; i < jsonVal.length; i++) {
           tempTeachers.add(
             _teacherPlaceholder(data: jsonVal[i]),
