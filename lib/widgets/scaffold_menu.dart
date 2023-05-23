@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:plan_lekcji/webscrapper/scrapper.dart';
+import 'package:plan_lekcji/widgets/glass_morphism.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/theming.dart';
@@ -24,11 +26,17 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   List<Widget> classes = [];
   List<Widget> searchItems = [];
 
+  late String searchingFor;
+
+  late bool isRefreshing;
+
   @override
   void initState() {
     super.initState();
     selectedMenuIndex = 0;
+    searchingFor = "class";
     _searchCtrl = TextEditingController();
+    isRefreshing = false;
     retrieveDataFromJSON().then((jsonVal) {
       if (jsonVal != null) {
         savedLessons = jsonVal;
@@ -43,6 +51,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         }
         return;
       }
+      isRefreshing = true;
       extractAllData().then((val) {
         savedLessons = val;
         var tempClasses = <Widget>[];
@@ -52,7 +61,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
               data: val[i],
             ),
           );
-          setState(() => classes = tempClasses);
+          setState(() {
+            classes = tempClasses;
+            isRefreshing = false;
+          });
         }
       });
     });
@@ -84,186 +96,242 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-        backgroundColor: Theming.primaryColor,
-        child: const Icon(
-          Icons.menu_rounded,
-          color: Theming.whiteTone,
-          size: 30,
-        ),
-      ),
-      drawer: Drawer(
-        width: MediaQuery.of(context).size.width / 2 + 30,
-        backgroundColor: Theming.bgColor,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Theme(
-                data: ThemeData(dividerColor: Colors.transparent),
-                child: const DrawerHeader(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(15),
-                    ),
-                    image: DecorationImage(
-                      image: AssetImage("assets/elektronik.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: SizedBox(
-                    height: 100,
-                    width: double.infinity,
-                  ),
-                ),
+  DateTime backButtonPressedTime = DateTime.now();
+
+  Future<bool> _doubleTapBack(BuildContext context) async {
+    final diff = DateTime.now().difference(backButtonPressedTime);
+    backButtonPressedTime = DateTime.now();
+
+    if (diff >= const Duration(seconds: 2)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          dismissDirection: DismissDirection.horizontal,
+          elevation: 0,
+          content: GlassMorphism(
+            blur: 20,
+            opacity: 0.1,
+            borderRadius: BorderRadius.circular(30),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: Text(
+                "Kliknij jeszcze raz, aby wyjść",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        height: 40,
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(vertical: 5),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(
-                          color: Theming.whiteTone,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: TextField(
-                            onChanged: (val) {
-                              searchItems = [];
-                              final tempSearches = <Widget>[];
-                              for (final e in savedLessons!) {
-                                if (e.title!.contains(val.toUpperCase())) {
-                                  tempSearches.add(
-                                    _searchItem(data: e),
-                                  );
-                                }
-                              }
-                              if (val.isEmpty) {
-                                setState(() => searchItems = []);
-                                return;
-                              }
-                              setState(() => searchItems = tempSearches);
-                            },
-                            controller: _searchCtrl,
-                            style: const TextStyle(
-                              fontSize: 14,
-                            ),
-                            cursorColor: Theming.primaryColor,
-                            cursorHeight: 20,
-                            decoration: const InputDecoration(
-                              isCollapsed: true,
-                              hintText: "Szukaj",
-                              hintStyle: TextStyle(
-                                fontSize: 14,
-                              ),
-                              icon: Icon(
-                                Icons.search_rounded,
-                                color: Theming.primaryColor,
-                              ),
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        "MENU",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theming.whiteTone.withOpacity(0.5),
-                          fontSize: 12,
-                        ),
-                      ),
-                      _menuItem(
-                        0,
-                        caption:
-                            "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
-                        icon: Icons.calendar_month_rounded,
-                        route: "/",
-                        extra: AllLessons(
-                          title: favClass,
-                          lessonData: favClassData,
-                        ),
-                      ),
-                      _menuItem(
-                        1,
-                        caption: "Nauczyciele",
-                        icon: Icons.people_alt_rounded,
-                        route: "/teachers",
-                      ),
-                      _menuItem(
-                        2,
-                        caption: "Sale lekcyjne",
-                        icon: Icons.meeting_room_rounded,
-                        route: "/classrooms",
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "KLASY",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theming.whiteTone.withOpacity(0.5),
-                              fontSize: 12,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              var val = await extractAllData();
-                              var tempClasses = <Widget>[];
-                              for (int i = 0; i < val.length; i++) {
-                                tempClasses.add(
-                                  _classPlaceholder(data: val[i]),
-                                );
-                              }
-                              setState(() => classes = tempClasses);
-                            },
-                            icon: Icon(
-                              Icons.refresh,
-                              color: Theming.whiteTone.withOpacity(0.5),
-                              size: 20,
-                            ),
-                          ),
-                        ],
-                      ),
-                      searchItems.isEmpty
-                          ? Align(
-                              alignment: Alignment.centerLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: classes,
-                              ),
-                            )
-                          : Align(
-                              alignment: Alignment.centerLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: searchItems,
-                              ),
-                            ),
-                      SizedBox(
-                        height: MediaQuery.of(context).viewPadding.bottom + 30,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
+      );
+      return false;
+    } else {
+      SystemNavigator.pop(animated: true);
+      return true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => _doubleTapBack(context),
+      child: Scaffold(
+        key: _scaffoldKey,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+          backgroundColor: Theming.primaryColor,
+          child: const Icon(
+            Icons.menu_rounded,
+            color: Theming.whiteTone,
+            size: 30,
+          ),
+        ),
+        drawer: Drawer(
+          width: MediaQuery.of(context).size.width / 2 + 30,
+          backgroundColor: Theming.bgColor,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Theme(
+                  data: ThemeData(dividerColor: Colors.transparent),
+                  child: const DrawerHeader(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                      ),
+                      image: DecorationImage(
+                        image: AssetImage("assets/elektronik.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: SizedBox(
+                      height: 100,
+                      width: double.infinity,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 40,
+                          width: double.infinity,
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                            color: Theming.whiteTone,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: TextField(
+                              onChanged: (val) {
+                                searchItems = [];
+                                final tempSearches = <Widget>[];
+                                for (final e in savedLessons!) {
+                                  if (e.title!.contains(val.toUpperCase())) {
+                                    tempSearches.add(
+                                      _searchItem(data: e),
+                                    );
+                                  }
+                                }
+                                if (val.isEmpty) {
+                                  setState(() => searchItems = []);
+                                  return;
+                                }
+                                setState(() => searchItems = tempSearches);
+                              },
+                              controller: _searchCtrl,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                              cursorColor: Theming.primaryColor,
+                              cursorHeight: 20,
+                              decoration: const InputDecoration(
+                                isCollapsed: true,
+                                hintText: "Szukaj",
+                                hintStyle: TextStyle(
+                                  fontSize: 14,
+                                ),
+                                icon: Icon(
+                                  Icons.search_rounded,
+                                  color: Theming.primaryColor,
+                                ),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "MENU",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theming.whiteTone.withOpacity(0.5),
+                            fontSize: 12,
+                          ),
+                        ),
+                        _menuItem(
+                          0,
+                          caption:
+                              "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
+                          icon: Icons.calendar_month_rounded,
+                          route: "/",
+                          extra: AllLessons(
+                            title: favClass,
+                            lessonData: favClassData,
+                          ),
+                          searchType: "class",
+                        ),
+                        _menuItem(
+                          1,
+                          caption: "Nauczyciele",
+                          icon: Icons.people_alt_rounded,
+                          route: "/teachers",
+                          searchType: "teacher",
+                        ),
+                        _menuItem(
+                          2,
+                          caption: "Sale lekcyjne",
+                          icon: Icons.meeting_room_rounded,
+                          route: "/classrooms",
+                          searchType: "classroom",
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "KLASY",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theming.whiteTone.withOpacity(0.5),
+                                fontSize: 12,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                setState(() => isRefreshing = true);
+                                var val = await extractAllData();
+                                var tempClasses = <Widget>[];
+                                for (int i = 0; i < val.length; i++) {
+                                  tempClasses.add(
+                                    _classPlaceholder(data: val[i]),
+                                  );
+                                }
+                                setState(() {
+                                  classes = tempClasses;
+                                  isRefreshing = false;
+                                });
+                              },
+                              icon: Icon(
+                                Icons.refresh,
+                                color: Theming.whiteTone.withOpacity(0.5),
+                                size: 20,
+                              ),
+                            ),
+                          ],
+                        ),
+                        isRefreshing
+                            ? const Padding(
+                                padding: EdgeInsets.only(top: 30),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: Theming.primaryColor,
+                                  ),
+                                ),
+                              )
+                            : searchItems.isEmpty
+                                ? Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: classes,
+                                    ),
+                                  )
+                                : Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: searchItems,
+                                    ),
+                                  ),
+                        SizedBox(
+                          height:
+                              MediaQuery.of(context).viewPadding.bottom + 30,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        body: widget.child,
       ),
-      body: widget.child,
     );
   }
 
@@ -272,12 +340,14 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     required String caption,
     required IconData icon,
     required String route,
+    String searchType = "class",
     Object? extra,
   }) {
     bool isSelected = selectedMenuIndex == index;
 
     return GestureDetector(
       onTap: () {
+        searchingFor = searchType;
         setState(() => selectedMenuIndex = index);
         Navigator.of(context).pop();
         context.go(route, extra: extra);
@@ -316,6 +386,8 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   Widget _classPlaceholder({
     required AllLessons data,
   }) {
+    bool isFavourite = data.title! == favClass;
+
     return Visibility(
       visible: data.type == "class",
       child: Row(
@@ -323,6 +395,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         children: [
           TextButton(
             onPressed: () {
+              Navigator.pop(context);
               context.go(
                 '/',
                 extra: data,
@@ -336,7 +409,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                 bottom: 10,
               ),
               child: Text(
-                data.title!,
+                data.title![data.title!.length - 1] == "."
+                    ? data.title!.replaceRange(data.title!.length - 1, null, "")
+                    : data.title!,
                 style: const TextStyle(
                   color: Theming.whiteTone,
                   fontWeight: FontWeight.bold,
@@ -357,9 +432,11 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
               }
               setState(() => favClass = data.title!);
             },
-            icon: const Icon(
-              Icons.star_rounded,
-              color: Colors.yellow,
+            icon: Icon(
+              isFavourite ? Icons.star_rounded : Icons.star_border_rounded,
+              color: isFavourite
+                  ? Colors.yellow
+                  : Theming.whiteTone.withOpacity(0.3),
             ),
           ),
         ],
@@ -368,34 +445,38 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   }
 
   Widget _searchItem({required AllLessons data}) {
-    return TextButton(
-      onPressed: () {
-        if (data.type == "class") {
-          context.go("/", extra: data);
-          return;
-        }
+    return Visibility(
+      visible: searchingFor == data.type,
+      child: TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+          if (data.type == "class") {
+            context.go("/", extra: data);
+            return;
+          }
 
-        if (data.type == "teacher") {
-          context.push("/teacher-schedule", extra: data);
-          return;
-        }
+          if (data.type == "teacher") {
+            context.push("/teacher-schedule", extra: data);
+            return;
+          }
 
-        if (data.type == "classroom") {
-          context.push("/classroom-schedule", extra: data);
-          return;
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(
-          right: 55,
-          top: 10,
-          bottom: 10,
-        ),
-        child: Text(
-          data.title!,
-          style: const TextStyle(
-            color: Theming.whiteTone,
-            fontWeight: FontWeight.bold,
+          if (data.type == "classroom") {
+            context.push("/classroom-schedule", extra: data);
+            return;
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(
+            right: 55,
+            top: 10,
+            bottom: 10,
+          ),
+          child: Text(
+            data.title!,
+            style: const TextStyle(
+              color: Theming.whiteTone,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
