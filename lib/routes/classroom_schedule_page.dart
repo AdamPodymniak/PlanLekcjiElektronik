@@ -55,7 +55,7 @@ class _ClassroomSchedulePageState extends State<ClassroomSchedulePage> {
               ),
             ),
             bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(56),
+              preferredSize: const Size.fromHeight(54),
               child: WeekdayRow(
                 onSelect: (wd) {
                   setState(() => weekdayIndex = wd);
