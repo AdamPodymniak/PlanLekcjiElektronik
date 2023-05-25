@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../webscrapper/scrapper.dart';
 import '../widgets/glass_morphism.dart';
 import '../utils/theming.dart';
+import '../widgets/scaffoldmenu_widgets/category_item.dart';
 
 class ScaffoldMenu extends StatefulWidget {
   final Widget child;
@@ -43,8 +44,18 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         final tempItems = <Widget>[];
         for (int i = 0; i < jsonVal.length; i++) {
           tempItems.add(
-            _categoryItemPlaceholder(
+            CategoryItem(
+              favClass: favClass,
+              favClassData: favClassData,
+              savedLessons: savedLessons,
+              searchingFor: searchingFor,
               data: jsonVal[i],
+              onClick: (fav, favData) {
+                setState(() {
+                  favClass = fav;
+                });
+                favClassData = favData;
+              },
             ),
           );
           setState(() => results = tempItems);
@@ -57,8 +68,18 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         var tempItems = <Widget>[];
         for (int i = 0; i < val.length; i++) {
           tempItems.add(
-            _categoryItemPlaceholder(
+            CategoryItem(
+              favClass: favClass,
+              favClassData: favClassData,
+              savedLessons: savedLessons,
+              searchingFor: searchingFor,
               data: val[i],
+              onClick: (fav, favData) {
+                setState(() {
+                  favClass = fav;
+                });
+                favClassData = favData;
+              },
             ),
           );
           setState(() {
@@ -276,7 +297,19 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                                 final tempClasses = <Widget>[];
                                 for (int i = 0; i < val.length; i++) {
                                   tempClasses.add(
-                                    _categoryItemPlaceholder(data: val[i]),
+                                    CategoryItem(
+                                      favClass: favClass,
+                                      favClassData: favClassData,
+                                      savedLessons: savedLessons,
+                                      searchingFor: searchingFor,
+                                      data: val[i],
+                                      onClick: (fav, favData) {
+                                        setState(() {
+                                          favClass = fav;
+                                        });
+                                        favClassData = favData;
+                                      },
+                                    ),
                                   );
                                 }
                                 setState(() {
@@ -380,66 +413,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _categoryItemPlaceholder({
-    required AllLessons data,
-  }) {
-    bool isFavourite = data.title! == favClass;
-
-    return Visibility(
-      visible: data.type == searchingFor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.go(
-                '/',
-                extra: data,
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(
-                right: 55,
-                top: 10,
-                bottom: 10,
-              ),
-              child: Text(
-                data.title![data.title!.length - 1] == "."
-                    ? data.title!.replaceRange(data.title!.length - 1, null, "")
-                    : data.title!,
-                style: const TextStyle(
-                  color: Theming.whiteTone,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setString("favourite", data.title!);
-
-              for (final cls in savedLessons!) {
-                if (cls.title == data.title) {
-                  favClassData = cls.lessonData;
-                  break;
-                }
-              }
-              setState(() => favClass = data.title!);
-            },
-            icon: Icon(
-              isFavourite ? Icons.star_rounded : Icons.star_border_rounded,
-              color: isFavourite
-                  ? Colors.yellow
-                  : Theming.whiteTone.withOpacity(0.3),
-            ),
-          ),
-        ],
       ),
     );
   }

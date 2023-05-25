@@ -1,78 +1,92 @@
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:go_router/go_router.dart';
 
-// import "/webscrapper/scrapper.dart";
-// import '/utils/theming.dart';
+import '/utils/theming.dart';
+import '/webscrapper/scrapper.dart';
 
-// class CategoryItem extends StatefulWidget {
-//   final String? favClass;
-//   final AllLessons data;
-//   const CategoryItem({this.favClass, required this.data, super.key});
+class CategoryItem extends StatelessWidget {
+  final String? favClass;
+  final String searchingFor;
+  final List<AllLessons>? savedLessons;
+  final List<LessonData> favClassData;
+  final AllLessons data;
 
-//   @override
-//   State<CategoryItem> createState() => _CategoryItemState();
-// }
+  ///[favClass], [favClassData],
+  final Function(String?, List<LessonData>) onClick;
 
-// class _CategoryItemState extends State<CategoryItem> {
-//   @override
-//   Widget build(BuildContext context) {
-//     bool isFavourite = widget.data.title! == widget.favClass;
+  const CategoryItem({
+    required this.favClass,
+    required this.searchingFor,
+    required this.savedLessons,
+    required this.favClassData,
+    required this.data,
+    required this.onClick,
+    super.key,
+  });
 
-//
-//     return Visibility(
-//       visible: widget.data.type == searchingFor,
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: [
-//           TextButton(
-//             onPressed: () {
-//               Navigator.pop(context);
-//               context.go(
-//                 '/',
-//                 extra: widget.data,
-//               );
-//             },
-//             child: Padding(
-//               padding: const EdgeInsets.only(
-//                 right: 55,
-//                 top: 10,
-//                 bottom: 10,
-//               ),
-//               child: Text(
-//                 widget.data.title![widget.data.title!.length - 1] == "."
-//                     ? widget.data.title!
-//                         .replaceRange(widget.data.title!.length - 1, null, "")
-//                     : widget.data.title!,
-//                 style: const TextStyle(
-//                   color: Theming.whiteTone,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ),
-//           ),
-//           IconButton(
-//             onPressed: () async {
-//               final prefs = await SharedPreferences.getInstance();
-//               await prefs.setString("favourite", data.title!);
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: data.type == searchingFor,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.go(
+                '/',
+                extra: data,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 55,
+                top: 10,
+                bottom: 10,
+              ),
+              child: Text(
+                data.title![data.title!.length - 1] == "."
+                    ? data.title!.replaceRange(
+                        data.title!.length - 1,
+                        null,
+                        "",
+                      )
+                    : data.title!,
+                style: const TextStyle(
+                  color: Theming.whiteTone,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setString("favourite", data.title!);
 
-//               for (final cls in savedLessons!) {
-//                 if (cls.title == widget.data.title) {
-//                   favClassData = cls.lessonData;
-//                   break;
-//                 }
-//               }
-//               setState(() => widget.favClass = widget.data.title);
-//             },
-//             icon: Icon(
-//               isFavourite ? Icons.star_rounded : Icons.star_border_rounded,
-//               color: isFavourite
-//                   ? Colors.yellow
-//                   : Theming.whiteTone.withOpacity(0.3),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+              for (final cls in savedLessons!) {
+                if (cls.title == data.title) {
+                  onClick(
+                    data.title,
+                    cls.lessonData,
+                  );
+                  break;
+                }
+              }
+            },
+            icon: Icon(
+              data.title == favClass
+                  ? Icons.star_rounded
+                  : Icons.star_border_rounded,
+              color: data.title == favClass
+                  ? Colors.yellow
+                  : Theming.whiteTone.withOpacity(0.3),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

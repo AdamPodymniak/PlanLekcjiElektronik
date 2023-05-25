@@ -56,10 +56,14 @@ class _ClassroomSchedulePageState extends State<ClassroomSchedulePage> {
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(54),
-              child: WeekdayRow(
-                onSelect: (wd) {
-                  setState(() => weekdayIndex = wd);
-                },
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: WeekdayRow(
+                  lessons: widget.data.lessonData,
+                  onSelect: (wd) {
+                    setState(() => weekdayIndex = wd);
+                  },
+                ),
               ),
             ),
           ),

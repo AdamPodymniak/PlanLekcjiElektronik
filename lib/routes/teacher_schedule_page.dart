@@ -55,17 +55,19 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(54),
-              child: WeekdayRow(
-                onSelect: (wd) {
-                  setState(() => weekdayIndex = wd);
-                },
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: WeekdayRow(
+                  lessons: widget.data.lessonData,
+                  onSelect: (wd) {
+                    setState(() => weekdayIndex = wd);
+                  },
+                ),
               ),
             ),
           ),
           TimeList(
-            day: weekdays[DateTime.now().weekday > 5
-                ? DateTime.now().weekday - 1
-                : weekdayIndex],
+            day: weekdays[weekdayIndex],
             lessons: widget.data,
           ),
         ],
