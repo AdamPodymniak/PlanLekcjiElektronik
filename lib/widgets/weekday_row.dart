@@ -14,20 +14,37 @@ class WeekdayRow extends StatefulWidget {
 
 class _WeekdayRowState extends State<WeekdayRow> {
   late int selectedIndex;
+  late ScrollController scrollCtrl;
 
   @override
   void initState() {
     super.initState();
-    selectedIndex = 0;
+    scrollCtrl = ScrollController();
+    selectedIndex = DateTime.now().weekday > 5 ? 0 : DateTime.now().weekday - 1;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onSelect(selectedIndex);
+      if (selectedIndex == 4) {
+        scrollCtrl.jumpTo(scrollCtrl.position.viewportDimension);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollCtrl.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
+      child: SizedBox(
+        height: 50,
+        width: double.infinity,
+        child: ListView(
+          controller: scrollCtrl,
+          scrollDirection: Axis.horizontal,
           children: [
             const SizedBox(width: 15),
             _weekdayBox(0, "Poniedziałek"),
@@ -70,9 +87,7 @@ class _WeekdayRowState extends State<WeekdayRow> {
             vertical: 15,
           ),
           decoration: BoxDecoration(
-            color: isSelected
-                ? Theming.primaryColor
-                : Theming.whiteTone.withOpacity(0.1),
+            color: isSelected ? Theming.primaryColor : Theming.whiteTone.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(

@@ -255,8 +255,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                         ),
                         _menuItem(
                           0,
-                          caption:
-                              "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
+                          caption: "Plan lekcji ${favClass != null ? "($favClass)" : ""}",
                           icon: Icons.calendar_month_rounded,
                           route: "/",
                           searchType: "class",
@@ -338,22 +337,19 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                                 ? Align(
                                     alignment: Alignment.centerLeft,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: results,
                                     ),
                                   )
                                 : Align(
                                     alignment: Alignment.centerLeft,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: searchItems,
                                     ),
                                   ),
                         SizedBox(
-                          height:
-                              MediaQuery.of(context).viewPadding.bottom + 30,
+                          height: MediaQuery.of(context).viewPadding.bottom + 30,
                         ),
                       ],
                     ),

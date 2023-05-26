@@ -17,20 +17,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  late int weekdayIndex;
-  List<String> weekdays = [
-    "Poniedziałek",
-    "Wtorek",
-    "Środa",
-    "Czwartek",
-    "Piątek",
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    weekdayIndex = 0;
-  }
+  int weekdayIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +54,7 @@ class _SchedulePageState extends State<SchedulePage> {
             ),
           ),
           TimeList(
-            day: weekdays[weekdayIndex],
+            dayIndex: weekdayIndex,
             lessons: widget.data,
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../utils/theming.dart';
 import '../webscrapper/scrapper.dart';
@@ -17,21 +18,7 @@ class ClassroomSchedulePage extends StatefulWidget {
 }
 
 class _ClassroomSchedulePageState extends State<ClassroomSchedulePage> {
-  late int weekdayIndex;
-
-  List<String> weekdays = [
-    "Poniedziałek",
-    "Wtorek",
-    "Środa",
-    "Czwartek",
-    "Piątek",
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    weekdayIndex = 0;
-  }
+  int weekdayIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +33,14 @@ class _ClassroomSchedulePageState extends State<ClassroomSchedulePage> {
             pinned: true,
             centerTitle: true,
             expandedHeight: 140,
+            leading: IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Theming.whiteTone,
+                size: 18,
+              ),
+            ),
             title: Text(
               widget.data.title!,
               style: const TextStyle(
@@ -68,7 +63,7 @@ class _ClassroomSchedulePageState extends State<ClassroomSchedulePage> {
             ),
           ),
           TimeList(
-            day: weekdays[weekdayIndex],
+            dayIndex: weekdayIndex,
             lessons: widget.data,
           ),
         ],

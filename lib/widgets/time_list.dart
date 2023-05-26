@@ -4,10 +4,10 @@ import '/utils/theming.dart';
 import '/webscrapper/scrapper.dart';
 
 class TimeList extends StatefulWidget {
-  final String day;
+  final int dayIndex;
   final AllLessons lessons;
   const TimeList({
-    required this.day,
+    required this.dayIndex,
     required this.lessons,
     super.key,
   });
@@ -17,6 +17,14 @@ class TimeList extends StatefulWidget {
 }
 
 class _TimeListState extends State<TimeList> {
+  List<String> weekdays = [
+    "Poniedziałek",
+    "Wtorek",
+    "Środa",
+    "Czwartek",
+    "Piątek",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -54,7 +62,7 @@ class _TimeListState extends State<TimeList> {
     final formattedTime = "$formStart - $formEnd";
 
     return Visibility(
-      visible: data.day == widget.day,
+      visible: data.day == weekdays[widget.dayIndex],
       child: Padding(
         padding: const EdgeInsets.only(bottom: 25),
         child: SingleChildScrollView(
