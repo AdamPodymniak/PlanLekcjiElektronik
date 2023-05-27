@@ -23,7 +23,7 @@ class _WeekdayRowState extends State<WeekdayRow> {
     selectedIndex = DateTime.now().weekday > 5 ? 0 : DateTime.now().weekday - 1;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onSelect(selectedIndex);
-      if (selectedIndex == 4) {
+      if (selectedIndex <= 3) {
         scrollCtrl.jumpTo(scrollCtrl.position.viewportDimension);
       }
     });

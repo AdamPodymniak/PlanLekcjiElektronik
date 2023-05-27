@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../webscrapper/scrapper.dart';
 import '../widgets/glass_morphism.dart';
 import '../utils/theming.dart';
-import '../widgets/scaffoldmenu_widgets/category_item.dart';
+import '../widgets/scaffoldmenu_widgets/search_item.dart';
+import '../widgets/scaffoldmenu_widgets/category_list.dart';
 
 class ScaffoldMenu extends StatefulWidget {
   final Widget child;
@@ -24,10 +25,11 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   List<LessonData> favClassData = [];
   List<AllLessons>? savedLessons;
 
-  List<Widget> results = [];
+  List<AllLessons> results = [];
   List<Widget> searchItems = [];
 
   late String searchingFor;
+  late String selectedCategory;
 
   late bool isRefreshing;
 
@@ -36,28 +38,15 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     super.initState();
     selectedMenuIndex = 0;
     searchingFor = "class";
+    selectedCategory = "KLASY";
     _searchCtrl = TextEditingController();
     isRefreshing = false;
     retrieveDataFromJSON().then((jsonVal) {
       if (jsonVal != null) {
         savedLessons = jsonVal;
-        final tempItems = <Widget>[];
+        final tempItems = <AllLessons>[];
         for (int i = 0; i < jsonVal.length; i++) {
-          tempItems.add(
-            CategoryItem(
-              favClass: favClass,
-              favClassData: favClassData,
-              savedLessons: savedLessons,
-              searchingFor: searchingFor,
-              data: jsonVal[i],
-              onClick: (fav, favData) {
-                setState(() {
-                  favClass = fav;
-                });
-                favClassData = favData;
-              },
-            ),
-          );
+          tempItems.add(jsonVal[i]);
           setState(() => results = tempItems);
         }
         return;
@@ -65,23 +54,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
       isRefreshing = true;
       extractAllData().then((val) {
         savedLessons = val;
-        var tempItems = <Widget>[];
+        var tempItems = <AllLessons>[];
         for (int i = 0; i < val.length; i++) {
-          tempItems.add(
-            CategoryItem(
-              favClass: favClass,
-              favClassData: favClassData,
-              savedLessons: savedLessons,
-              searchingFor: searchingFor,
-              data: val[i],
-              onClick: (fav, favData) {
-                setState(() {
-                  favClass = fav;
-                });
-                favClassData = favData;
-              },
-            ),
-          );
+          tempItems.add(val[i]);
           setState(() {
             results = tempItems;
             isRefreshing = false;
@@ -116,7 +91,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
   }
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
   DateTime backButtonPressedTime = DateTime.now();
 
   Future<bool> _doubleTapBack(BuildContext context) async {
@@ -145,10 +119,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         ),
       );
       return false;
-    } else {
-      SystemNavigator.pop(animated: true);
-      return true;
     }
+
+    SystemNavigator.pop(animated: true);
+    return true;
   }
 
   @override
@@ -167,7 +141,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
           ),
         ),
         drawer: Drawer(
-          width: MediaQuery.of(context).size.width / 2 + 30,
+          width: MediaQuery.of(context).size.width / 2 + 40,
           backgroundColor: Theming.bgColor,
           child: SingleChildScrollView(
             child: Column(
@@ -214,7 +188,10 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                                 for (final e in savedLessons!) {
                                   if (e.title!.contains(val.toUpperCase())) {
                                     tempSearches.add(
-                                      _searchItem(data: e),
+                                      SearchItem(
+                                        searchingFor: searchingFor,
+                                        data: e,
+                                      ),
                                     );
                                   }
                                 }
@@ -259,6 +236,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                           icon: Icons.calendar_month_rounded,
                           route: "/",
                           searchType: "class",
+                          category: "KLASY",
                           extra: AllLessons(
                             title: favClass,
                             lessonData: favClassData,
@@ -270,6 +248,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                           icon: Icons.people_alt_rounded,
                           route: "/teachers",
                           searchType: "teacher",
+                          category: "NAUCZYCIELE",
                         ),
                         _menuItem(
                           2,
@@ -277,12 +256,13 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                           icon: Icons.meeting_room_rounded,
                           route: "/classrooms",
                           searchType: "classroom",
+                          category: "SALE LEKCYJNE",
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "KLASY",
+                              selectedCategory,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Theming.whiteTone.withOpacity(0.5),
@@ -293,23 +273,9 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                               onPressed: () async {
                                 setState(() => isRefreshing = true);
                                 final val = await extractAllData();
-                                final tempClasses = <Widget>[];
+                                final tempClasses = <AllLessons>[];
                                 for (int i = 0; i < val.length; i++) {
-                                  tempClasses.add(
-                                    CategoryItem(
-                                      favClass: favClass,
-                                      favClassData: favClassData,
-                                      savedLessons: savedLessons,
-                                      searchingFor: searchingFor,
-                                      data: val[i],
-                                      onClick: (fav, favData) {
-                                        setState(() {
-                                          favClass = fav;
-                                        });
-                                        favClassData = favData;
-                                      },
-                                    ),
-                                  );
+                                  tempClasses.add(val[i]);
                                 }
                                 setState(() {
                                   results = tempClasses;
@@ -334,12 +300,13 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                                 ),
                               )
                             : searchItems.isEmpty
-                                ? Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: results,
-                                    ),
+                                ? CategoryList(
+                                    category: searchingFor,
+                                    results: results,
+                                    onClassClick: (className, classData) {
+                                      setState(() => favClass = className);
+                                      favClassData = classData;
+                                    },
                                   )
                                 : Align(
                                     alignment: Alignment.centerLeft,
@@ -369,6 +336,7 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
     required String caption,
     required IconData icon,
     required String route,
+    required String category,
     String searchType = "class",
     Object? extra,
   }) {
@@ -379,12 +347,14 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         setState(() {
           selectedMenuIndex = index;
           searchingFor = searchType;
+          selectedCategory = category;
         });
         context.go(route, extra: extra);
       },
       child: AnimatedContainer(
         curve: Curves.linearToEaseOut,
         duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 5),
         padding: const EdgeInsets.symmetric(
           horizontal: 5,
           vertical: 10,
@@ -392,6 +362,14 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: isSelected ? Theming.primaryColor : Colors.transparent,
+          boxShadow: [
+            BoxShadow(
+              color: isSelected ? Colors.black.withOpacity(0.3) : Colors.transparent,
+              blurRadius: 4,
+              spreadRadius: 2,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -408,45 +386,6 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _searchItem({required AllLessons data}) {
-    return Visibility(
-      visible: searchingFor == data.type,
-      child: TextButton(
-        onPressed: () {
-          Navigator.pop(context);
-          if (data.type == "class") {
-            context.go("/", extra: data);
-            return;
-          }
-
-          if (data.type == "teacher") {
-            context.push("/teacher-schedule", extra: data);
-            return;
-          }
-
-          if (data.type == "classroom") {
-            context.push("/classroom-schedule", extra: data);
-            return;
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(
-            right: 55,
-            top: 10,
-            bottom: 10,
-          ),
-          child: Text(
-            data.title!,
-            style: const TextStyle(
-              color: Theming.whiteTone,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
         ),
       ),
     );

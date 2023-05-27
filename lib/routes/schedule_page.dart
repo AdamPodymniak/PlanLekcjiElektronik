@@ -33,7 +33,7 @@ class _SchedulePageState extends State<SchedulePage> {
             centerTitle: true,
             expandedHeight: 140,
             title: Text(
-              "${widget.data.title}",
+              widget.data.title ?? "Wybierz klasę",
               style: const TextStyle(
                 color: Theming.primaryColor,
                 fontWeight: FontWeight.bold,
