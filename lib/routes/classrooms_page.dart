@@ -17,7 +17,6 @@ class _ClassroomsPageState extends State<ClassroomsPage> {
   @override
   void initState() {
     super.initState();
-
     retrieveDataFromJSON().then((jsonVal) {
       if (jsonVal != null) {
         var tempClassrooms = <Widget>[];

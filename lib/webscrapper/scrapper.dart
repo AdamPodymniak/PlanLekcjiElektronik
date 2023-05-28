@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import './teacher_list.dart';
 
 class LessonData {
@@ -54,7 +55,8 @@ class AllLessons {
 Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
   try {
     List<LessonData> output = [];
-    final url = Uri.parse("http://www.plan.elektronik.edu.pl/plany/$urlParam.html");
+    final url =
+        Uri.parse("http://www.plan.elektronik.edu.pl/plany/$urlParam.html");
     final response = await http.Client().get(url);
 
     if (response.statusCode != 404) {
@@ -63,11 +65,17 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
 
       var title = html.querySelector(".tytulnapis")?.innerHtml.trim();
 
-      final lessons = html.querySelectorAll("body > div > table > tbody > tr > td > table > tbody > tr").toList();
+      final lessons = html
+          .querySelectorAll(
+              "body > div > table > tbody > tr > td > table > tbody > tr")
+          .toList();
 
       for (int i = 0; i < lessons.length - 1; i++) {
         if (i == 0) {
-          lesson2DList.add(lessons[i].querySelectorAll('tr > th').map((e) => e.innerHtml.trim()).toList());
+          lesson2DList.add(lessons[i]
+              .querySelectorAll('tr > th')
+              .map((e) => e.innerHtml.trim())
+              .toList());
         } else {
           lesson2DList.add([
             lessons[i].querySelector('.nr')?.innerHtml.trim(),
@@ -87,14 +95,24 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
           final hour = lesson2DList[j][1];
           final day = lesson2DList[0][i];
           if (type == "class") {
-            final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e) => e.innerHtml.trim()).toList();
-            final singleTeacherList = lesson2DList[j][i].querySelectorAll('.n').map((e) => e.innerHtml.trim()).toList();
-            final singleClassroomList =
-                lesson2DList[j][i].querySelectorAll('.s').map((e) => e.innerHtml.trim()).toList();
+            final singleLessonList = lesson2DList[j][i]
+                .querySelectorAll('.p')
+                .map((e) => e.innerHtml.trim())
+                .toList();
+            final singleTeacherList = lesson2DList[j][i]
+                .querySelectorAll('.n')
+                .map((e) => e.innerHtml.trim())
+                .toList();
+            final singleClassroomList = lesson2DList[j][i]
+                .querySelectorAll('.s')
+                .map((e) => e.innerHtml.trim())
+                .toList();
             if (singleLessonList.isNotEmpty) {
               for (var k = 0; k < singleLessonList.length; k++) {
                 for (final element in teacherData) {
-                  if (element.simple == singleTeacherList[k]) singleTeacherList[k] = element.full;
+                  if (element.simple == singleTeacherList[k]) {
+                    singleTeacherList[k] = element.full;
+                  }
                 }
                 LessonData data = LessonData(
                     name: singleLessonList[k],
@@ -107,10 +125,18 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             }
           }
           if (type == "teacher") {
-            final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e) => e.innerHtml.trim()).toList();
-            final singleClassList = lesson2DList[j][i].querySelectorAll('.o').map((e) => e.innerHtml.trim()).toList();
-            final singleClassroomList =
-                lesson2DList[j][i].querySelectorAll('.s').map((e) => e.innerHtml.trim()).toList();
+            final singleLessonList = lesson2DList[j][i]
+                .querySelectorAll('.p')
+                .map((e) => e.innerHtml.trim())
+                .toList();
+            final singleClassList = lesson2DList[j][i]
+                .querySelectorAll('.o')
+                .map((e) => e.innerHtml.trim())
+                .toList();
+            final singleClassroomList = lesson2DList[j][i]
+                .querySelectorAll('.s')
+                .map((e) => e.innerHtml.trim())
+                .toList();
             if (singleLessonList.isNotEmpty) {
               for (var k = 0; k < singleLessonList.length; k++) {
                 for (final element in teacherData) {
@@ -128,13 +154,24 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             }
           }
           if (type == "classroom") {
-            final singleLessonList = lesson2DList[j][i].querySelectorAll('.p').map((e) => e.innerHtml.trim()).toList();
-            final singleClassList = lesson2DList[j][i].querySelectorAll('.o').map((e) => e.innerHtml.trim()).toList();
-            final singleTeacherList = lesson2DList[j][i].querySelectorAll('.n').map((e) => e.innerHtml.trim()).toList();
+            final singleLessonList = lesson2DList[j][i]
+                .querySelectorAll('.p')
+                .map((e) => e.innerHtml.trim())
+                .toList();
+            final singleClassList = lesson2DList[j][i]
+                .querySelectorAll('.o')
+                .map((e) => e.innerHtml.trim())
+                .toList();
+            final singleTeacherList = lesson2DList[j][i]
+                .querySelectorAll('.n')
+                .map((e) => e.innerHtml.trim())
+                .toList();
             if (singleLessonList.isNotEmpty) {
               for (var k = 0; k < singleLessonList.length; k++) {
                 for (final element in teacherData) {
-                  if (element.simple == singleTeacherList[k]) singleTeacherList[k] = element.full;
+                  if (element.simple == singleTeacherList[k]) {
+                    singleTeacherList[k] = element.full;
+                  }
                 }
                 LessonData data = LessonData(
                     name: singleLessonList[k],
@@ -203,7 +240,11 @@ Future<List<AllLessons>?> retrieveDataFromJSON() async {
       for (var ld in lesson['lessonData']) {
         lessonData.add(
           LessonData(
-              name: ld['name'], classroom: ld['classroom'], teacher: ld['teacher'], hour: ld['hour'], day: ld['day']),
+              name: ld['name'],
+              classroom: ld['classroom'],
+              teacher: ld['teacher'],
+              hour: ld['hour'],
+              day: ld['day']),
         );
       }
       retrievedLessons.add(
