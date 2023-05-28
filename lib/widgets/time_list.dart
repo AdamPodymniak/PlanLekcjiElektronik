@@ -47,6 +47,8 @@ class _TimeListState extends State<TimeList> {
     required LessonData data,
   }) {
     final times = data.hour.split("-");
+
+    //[0] = hour, [1] = minute
     final starts = [
       times[0].split(":")[0],
       times[0].split(":")[1],
@@ -61,6 +63,19 @@ class _TimeListState extends State<TimeList> {
     final formEnd = "${int.parse(ends[0]) < 10 ? "0" : ""}${ends[0].trim()}:${ends[1]}";
     final formattedTime = "$formStart - $formEnd";
 
+    final lessonEnd = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      int.parse(ends[0]),
+      int.parse(ends[1]),
+    );
+    final now = DateTime.now();
+
+    //TODO fix it
+    final isActive =
+        now.isBefore(lessonEnd) && now.difference(lessonEnd) < const Duration(minutes: -45);
+
     return Visibility(
       visible: data.day == weekdays[widget.dayIndex],
       child: Padding(
@@ -69,13 +84,28 @@ class _TimeListState extends State<TimeList> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              Text(
-                formattedTime,
-                style: TextStyle(
-                  color: Theming.whiteTone.withOpacity(0.6),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                    visible: isActive,
+                    child: const Text(
+                      "• Teraz",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    formattedTime,
+                    style: TextStyle(
+                      color: Theming.whiteTone.withOpacity(isActive ? 1 : 0.6),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 15),
               Container(
