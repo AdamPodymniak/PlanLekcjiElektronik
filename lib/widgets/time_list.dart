@@ -63,6 +63,14 @@ class _TimeListState extends State<TimeList> {
     final formEnd = "${int.parse(ends[0]) < 10 ? "0" : ""}${ends[0].trim()}:${ends[1]}";
     final formattedTime = "$formStart - $formEnd";
 
+    final lessonStart = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      int.parse(starts[0]),
+      int.parse(starts[1]),
+    );
+
     final lessonEnd = DateTime(
       DateTime.now().year,
       DateTime.now().month,
@@ -70,11 +78,10 @@ class _TimeListState extends State<TimeList> {
       int.parse(ends[0]),
       int.parse(ends[1]),
     );
-    final now = DateTime.now();
 
     //TODO fix it
-    final isActive =
-        now.isBefore(lessonEnd) && now.difference(lessonEnd) < const Duration(minutes: -45);
+    final now = DateTime.now();
+    final isActive = now.isBefore(lessonEnd) && now.isAfter(lessonStart);
 
     return Visibility(
       visible: data.day == weekdays[widget.dayIndex],
@@ -92,7 +99,7 @@ class _TimeListState extends State<TimeList> {
                     child: const Text(
                       "• Teraz",
                       style: TextStyle(
-                        color: Colors.green,
+                        color: Colors.lightGreenAccent,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -121,9 +128,9 @@ class _TimeListState extends State<TimeList> {
                     Container(
                       height: 80,
                       width: 5,
-                      decoration: const BoxDecoration(
-                        color: Theming.primaryColor,
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5),
                         ),
