@@ -47,6 +47,8 @@ class _TimeListState extends State<TimeList> {
     required LessonData data,
   }) {
     final times = data.hour.split("-");
+
+    //[0] = hour, [1] = minute
     final starts = [
       times[0].split(":")[0],
       times[0].split(":")[1],
@@ -61,6 +63,26 @@ class _TimeListState extends State<TimeList> {
     final formEnd = "${int.parse(ends[0]) < 10 ? "0" : ""}${ends[0].trim()}:${ends[1]}";
     final formattedTime = "$formStart - $formEnd";
 
+    final lessonStart = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      int.parse(starts[0]),
+      int.parse(starts[1]),
+    );
+
+    final lessonEnd = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      int.parse(ends[0]),
+      int.parse(ends[1]),
+    );
+
+    //TODO fix it
+    final now = DateTime.now();
+    final isActive = now.isBefore(lessonEnd) && now.isAfter(lessonStart);
+
     return Visibility(
       visible: data.day == weekdays[widget.dayIndex],
       child: Padding(
@@ -69,13 +91,28 @@ class _TimeListState extends State<TimeList> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              Text(
-                formattedTime,
-                style: TextStyle(
-                  color: Theming.whiteTone.withOpacity(0.6),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                    visible: isActive,
+                    child: const Text(
+                      "• Teraz",
+                      style: TextStyle(
+                        color: Colors.lightGreenAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    formattedTime,
+                    style: TextStyle(
+                      color: Theming.whiteTone.withOpacity(isActive ? 1 : 0.6),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 15),
               Container(
@@ -91,9 +128,9 @@ class _TimeListState extends State<TimeList> {
                     Container(
                       height: 80,
                       width: 5,
-                      decoration: const BoxDecoration(
-                        color: Theming.primaryColor,
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5),
                         ),
