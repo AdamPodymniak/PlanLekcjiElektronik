@@ -23,7 +23,7 @@ Aby uruchomić i korzystać z aplikacji, wymagane są następujące zależności
 
 - Flutter SDK
 - Dart SDK
-- Inne niezbędne zależności specyficzne dla Fluttera (patrz `pubspec.yaml`)
+- Inne niezbędne zależności specyficzne dla Flutter'a (patrz `pubspec.yaml`)
 
 ## Instalacja
 
@@ -62,16 +62,6 @@ Aby zainstalować projekt na swoim urządzeniu, wykonaj następujące kroki:
    ```
 
    Gdzie `<platforma>` to system operacyjny, na którym chcesz uruchomić aplikację (np. `apk`, `ipa`, `macos`, `windows`, itp.).
-
-## Konfiguracja
-
-Aby skonfigurować aplikację i dostosować ją do konkretnej szkoły, wykonaj poniższe kroki:
-
-1. Otwórz plik `lib/config.dart`.
-
-2. W pliku `config.dart`, zmodyfikuj odpowiednie zmienne zgodnie z potrzebami twojej szkoły (np. adres URL strony z planem lekcji, numery klas, itp.).
-
-3. Zapisz plik `config.dart` po dokonaniu zmian.
 
 ## Kontrybucja
 

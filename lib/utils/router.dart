@@ -23,7 +23,7 @@ GoRouter router = GoRouter(
               childWidget: SchedulePage(
                 data: state.extra as AllLessons? ??
                     AllLessons(
-                      title: "Plan lekcji",
+                      title: "Wybierz klasę",
                       lessonData: [],
                     ),
               ),

@@ -17,20 +17,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  late int weekdayIndex;
-  List<String> weekdays = [
-    "Poniedziałek",
-    "Wtorek",
-    "Środa",
-    "Czwartek",
-    "Piątek",
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    weekdayIndex = 0;
-  }
+  int weekdayIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +33,7 @@ class _SchedulePageState extends State<SchedulePage> {
             centerTitle: true,
             expandedHeight: 140,
             title: Text(
-              "${widget.data.title}",
+              widget.data.title ?? "Wybierz klasę",
               style: const TextStyle(
                 color: Theming.primaryColor,
                 fontWeight: FontWeight.bold,
@@ -55,15 +42,19 @@ class _SchedulePageState extends State<SchedulePage> {
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(54),
-              child: WeekdayRow(
-                onSelect: (wd) {
-                  setState(() => weekdayIndex = wd);
-                },
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: WeekdayRow(
+                  lessons: widget.data.lessonData,
+                  onSelect: (wd) {
+                    setState(() => weekdayIndex = wd);
+                  },
+                ),
               ),
             ),
           ),
           TimeList(
-            day: weekdays[weekdayIndex],
+            dayIndex: weekdayIndex,
             lessons: widget.data,
           ),
         ],

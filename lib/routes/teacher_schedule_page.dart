@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../utils/theming.dart';
 import '../webscrapper/scrapper.dart';
@@ -17,20 +18,7 @@ class TeacherSchedulePage extends StatefulWidget {
 }
 
 class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
-  late int weekdayIndex;
-  List<String> weekdays = [
-    "Poniedziałek",
-    "Wtorek",
-    "Środa",
-    "Czwartek",
-    "Piątek",
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    weekdayIndex = 0;
-  }
+  int weekdayIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +33,14 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
             pinned: true,
             centerTitle: true,
             expandedHeight: 140,
+            leading: IconButton(
+              onPressed: () => context.pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Theming.whiteTone,
+                size: 18,
+              ),
+            ),
             title: Text(
               widget.data.title!,
               style: const TextStyle(
@@ -55,17 +51,19 @@ class _TeacherSchedulePageState extends State<TeacherSchedulePage> {
             ),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(54),
-              child: WeekdayRow(
-                onSelect: (wd) {
-                  setState(() => weekdayIndex = wd);
-                },
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: WeekdayRow(
+                  lessons: widget.data.lessonData,
+                  onSelect: (wd) {
+                    setState(() => weekdayIndex = wd);
+                  },
+                ),
               ),
             ),
           ),
           TimeList(
-            day: weekdays[DateTime.now().weekday > 5
-                ? DateTime.now().weekday - 1
-                : weekdayIndex],
+            dayIndex: weekdayIndex,
             lessons: widget.data,
           ),
         ],

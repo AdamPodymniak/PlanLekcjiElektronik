@@ -4,10 +4,10 @@ import '/utils/theming.dart';
 import '/webscrapper/scrapper.dart';
 
 class TimeList extends StatefulWidget {
-  final String day;
+  final int dayIndex;
   final AllLessons lessons;
   const TimeList({
-    required this.day,
+    required this.dayIndex,
     required this.lessons,
     super.key,
   });
@@ -17,6 +17,14 @@ class TimeList extends StatefulWidget {
 }
 
 class _TimeListState extends State<TimeList> {
+  List<String> weekdays = [
+    "Poniedziałek",
+    "Wtorek",
+    "Środa",
+    "Czwartek",
+    "Piątek",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -38,8 +46,23 @@ class _TimeListState extends State<TimeList> {
   Widget _event({
     required LessonData data,
   }) {
+    final times = data.hour.split("-");
+    final starts = [
+      times[0].split(":")[0],
+      times[0].split(":")[1],
+    ];
+    final ends = [
+      times[1].split(":")[0],
+      times[1].split(":")[1],
+    ];
+
+    //formatted times
+    final formStart = "${int.parse(starts[0]) < 10 ? "0" : ""}${starts[0].trim()}:${starts[1]}";
+    final formEnd = "${int.parse(ends[0]) < 10 ? "0" : ""}${ends[0].trim()}:${ends[1]}";
+    final formattedTime = "$formStart - $formEnd";
+
     return Visibility(
-      visible: data.day == widget.day,
+      visible: data.day == weekdays[widget.dayIndex],
       child: Padding(
         padding: const EdgeInsets.only(bottom: 25),
         child: SingleChildScrollView(
@@ -47,11 +70,11 @@ class _TimeListState extends State<TimeList> {
           child: Row(
             children: [
               Text(
-                data.hour,
+                formattedTime,
                 style: TextStyle(
-                  color: Theming.whiteTone.withOpacity(0.3),
+                  color: Theming.whiteTone.withOpacity(0.6),
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 16,
                 ),
               ),
               const SizedBox(width: 15),
@@ -97,7 +120,7 @@ class _TimeListState extends State<TimeList> {
                               ),
                             ),
                             Text(
-                              data.classroom != null ? "• sala ${data.classroom}" : "",
+                              data.classroom != null ? " • sala ${data.classroom}" : "",
                               style: const TextStyle(
                                 color: Theming.whiteTone,
                               ),

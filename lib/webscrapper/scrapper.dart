@@ -13,6 +13,7 @@ class LessonData {
   String? className;
   String hour;
   String day;
+  String number;
 
   LessonData({
     required this.name,
@@ -21,6 +22,7 @@ class LessonData {
     this.className,
     required this.hour,
     required this.day,
+    required this.number
   });
 }
 
@@ -46,6 +48,7 @@ class AllLessons {
               'teacher': e.teacher,
               'hour': e.hour,
               'day': e.day,
+              'number': e.number,
             },
           ),
         ),
@@ -93,6 +96,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             n++;
           }
           final hour = lesson2DList[j][1];
+          final nr = lesson2DList[j][0];
           final day = lesson2DList[0][i];
           if (type == "class") {
             final singleLessonList = lesson2DList[j][i]
@@ -119,7 +123,9 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
                     classroom: singleClassroomList[k],
                     teacher: singleTeacherList[k],
                     hour: hour,
-                    day: day);
+                    day: day,
+                    number: nr
+                );
                 output.add(data);
               }
             }
@@ -148,7 +154,9 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
                     classroom: singleClassroomList[k],
                     className: singleClassList[k],
                     hour: hour,
-                    day: day);
+                    day: day,
+                    number: nr
+                );
                 output.add(data);
               }
             }
@@ -178,7 +186,9 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
                     teacher: singleTeacherList[k],
                     className: singleClassList[k],
                     hour: hour,
-                    day: day);
+                    day: day,
+                    number: nr
+                );
                 output.add(data);
               }
             }
@@ -244,7 +254,9 @@ Future<List<AllLessons>?> retrieveDataFromJSON() async {
               classroom: ld['classroom'],
               teacher: ld['teacher'],
               hour: ld['hour'],
-              day: ld['day']),
+              day: ld['day'],
+              number: ld['number']
+          ),
         );
       }
       retrievedLessons.add(
