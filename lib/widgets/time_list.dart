@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '/utils/theming.dart';
 import '/webscrapper/scrapper.dart';
@@ -88,104 +89,194 @@ class _TimeListState extends State<TimeList> {
         padding: const EdgeInsets.only(bottom: 25),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Visibility(
-                    visible: isActive,
-                    child: const Text(
-                      "• Teraz",
+          child: GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                useRootNavigator: true,
+                backgroundColor: Theming.bgColor,
+                builder: (ctx) {
+                  return SizedBox(
+                    height: 200,
+                    width: double.infinity,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width / 4),
+                      child: Column(
+                        children: [
+                          _eventModalItem(
+                            ctx,
+                            type: "teacher",
+                            caption: data.teacher!,
+                            icon: Icons.person_rounded,
+                          ),
+                          _eventModalItem(
+                            ctx,
+                            type: "classroom",
+                            caption: data.classroom!,
+                            icon: Icons.meeting_room_rounded,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Visibility(
+                      visible: isActive,
+                      child: const Text(
+                        "• Teraz",
+                        style: TextStyle(
+                          color: Theming.greenTone,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      formattedTime,
                       style: TextStyle(
-                        color: Colors.lightGreenAccent,
+                        color: Theming.whiteTone.withOpacity(isActive ? 1 : 0.6),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Lekcja: ${data.number}",
+                      style: const TextStyle(
+                        color: Theming.whiteTone,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  Text(
-                    formattedTime,
-                    style: TextStyle(
-                      color: Theming.whiteTone.withOpacity(isActive ? 1 : 0.6),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Lekcja: ${data.number}",
-                    style: const TextStyle(
-                      color: Theming.whiteTone,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(
-                      right: 15,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theming.whiteTone.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 80,
-                          width: 5,
-                          decoration: BoxDecoration(
-                            color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              bottomLeft: Radius.circular(5),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              data.name,
-                              style: const TextStyle(
-                                color: Theming.whiteTone,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                    Container(
+                      padding: const EdgeInsets.only(
+                        right: 15,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theming.whiteTone.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 80,
+                            width: 5,
+                            decoration: BoxDecoration(
+                              color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(5),
+                                bottomLeft: Radius.circular(5),
                               ),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  data.teacher ?? "",
-                                  style: const TextStyle(
-                                    color: Theming.whiteTone,
-                                  ),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                data.name,
+                                style: const TextStyle(
+                                  color: Theming.whiteTone,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
-                                Text(
-                                  data.teacher == null
-                                      ? "${data.className} • sala ${data.classroom}"
-                                      : " • sala ${data.classroom}",
-                                  style: const TextStyle(
-                                    color: Theming.whiteTone,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    data.teacher ?? "",
+                                    style: const TextStyle(
+                                      color: Theming.whiteTone,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
+                                  Text(
+                                    data.teacher == null
+                                        ? "${data.className} • sala ${data.classroom}"
+                                        : " • sala ${data.classroom}",
+                                    style: const TextStyle(
+                                      color: Theming.whiteTone,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 5),
-            ],
+                  ],
+                ),
+                const SizedBox(width: 5),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _eventModalItem(
+    BuildContext ctx, {
+    required String type,
+    required String caption,
+    required IconData icon,
+  }) {
+    return GestureDetector(
+      onTap: () async {
+        final data = await retrieveDataFromJSON();
+        for (final e in data!) {
+          if (e.title == caption) {
+            print("${e.title}   |   $caption");
+            if (mounted) {
+              context.push(
+                type == "teacher" ? "/teacher-schedule" : "/classroom-schedule",
+                extra: e,
+              );
+              Navigator.pop(ctx);
+            }
+            break;
+          }
+        }
+      },
+      child: Row(
+        children: [
+          Container(
+            height: 50,
+            width: 50,
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(
+              top: 10,
+              bottom: 10,
+              right: 10,
+            ),
+            decoration: BoxDecoration(
+              color: Theming.primaryColor.withOpacity(0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: Theming.primaryColor,
+              size: 30,
+            ),
+          ),
+          Text(
+            caption,
+            style: const TextStyle(
+              color: Theming.whiteTone,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
