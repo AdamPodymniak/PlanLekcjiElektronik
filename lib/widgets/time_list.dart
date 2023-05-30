@@ -191,23 +191,11 @@ class _TimeListState extends State<TimeList> {
                                   fontSize: 16,
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                    data.teacher ?? "",
-                                    style: const TextStyle(
-                                      color: Theming.whiteTone,
-                                    ),
-                                  ),
-                                  Text(
-                                    data.teacher == null
-                                        ? "${data.className} • sala ${data.classroom}"
-                                        : " • sala ${data.classroom}",
-                                    style: const TextStyle(
-                                      color: Theming.whiteTone,
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                "${data.teacher != null ? "${data.teacher} • " : ""}${data.className != null ? "${data.className} • " : ""}${data.classroom != null ? "sala: ${data.classroom}" : ""}",
+                                style: const TextStyle(
+                                  color: Theming.whiteTone,
+                                ),
                               ),
                             ],
                           )
@@ -235,8 +223,7 @@ class _TimeListState extends State<TimeList> {
       onTap: () async {
         final data = await retrieveDataFromJSON();
         for (final e in data!) {
-          if (e.title == caption) {
-            print("${e.title}   |   $caption");
+          if (e.title!.split(" ")[0] == caption) {
             if (mounted) {
               context.push(
                 type == "teacher" ? "/teacher-schedule" : "/classroom-schedule",
