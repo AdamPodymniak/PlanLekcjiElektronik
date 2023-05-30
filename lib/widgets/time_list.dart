@@ -99,7 +99,7 @@ class _TimeListState extends State<TimeList> {
                     child: const Text(
                       "• Teraz",
                       style: TextStyle(
-                        color: Colors.lightGreenAccent,
+                        color: Theming.greenTone,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -129,7 +129,7 @@ class _TimeListState extends State<TimeList> {
                       height: 80,
                       width: 5,
                       decoration: BoxDecoration(
-                        color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
+                        color: isActive ? Theming.greenTone : Theming.primaryColor,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(5),
                           bottomLeft: Radius.circular(5),
