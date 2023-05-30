@@ -79,7 +79,6 @@ class _TimeListState extends State<TimeList> {
       int.parse(ends[1]),
     );
 
-    //TODO fix it
     final now = DateTime.now();
     final isActive = now.isBefore(lessonEnd) && now.isAfter(lessonStart);
 
@@ -115,59 +114,73 @@ class _TimeListState extends State<TimeList> {
                 ],
               ),
               const SizedBox(width: 15),
-              Container(
-                padding: const EdgeInsets.only(
-                  right: 15,
-                ),
-                decoration: BoxDecoration(
-                  color: Theming.whiteTone.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 80,
-                      width: 5,
-                      decoration: BoxDecoration(
-                        color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          bottomLeft: Radius.circular(5),
-                        ),
-                      ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Lekcja: ${data.number}",
+                    style: const TextStyle(
+                      color: Theming.whiteTone,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(
+                      right: 15,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theming.whiteTone.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
                       children: [
-                        Text(
-                          data.name,
-                          style: const TextStyle(
-                            color: Theming.whiteTone,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        Container(
+                          height: 80,
+                          width: 5,
+                          decoration: BoxDecoration(
+                            color: isActive ? Colors.lightGreenAccent : Theming.primaryColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
+                            ),
                           ),
                         ),
-                        Row(
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              data.teacher ?? "",
+                              data.name,
                               style: const TextStyle(
                                 color: Theming.whiteTone,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-                            Text(
-                              data.classroom != null ? " • sala ${data.classroom}" : "",
-                              style: const TextStyle(
-                                color: Theming.whiteTone,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  data.teacher ?? "",
+                                  style: const TextStyle(
+                                    color: Theming.whiteTone,
+                                  ),
+                                ),
+                                Text(
+                                  data.teacher == null
+                                      ? "${data.className} • sala ${data.classroom}"
+                                      : " • sala ${data.classroom}",
+                                  style: const TextStyle(
+                                    color: Theming.whiteTone,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        ),
+                        )
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 5),
             ],

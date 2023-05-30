@@ -1,13 +1,12 @@
 # Web Scraper Planu Lekcji Elektronika
 
-Aby pobrać aplikację na swój telefon, trzeba wejść w zakładkę "release", wybrać app.release.apk i postępować według instrukcji prezentowanych przez sytem
+Aby pobrać aplikację na swój telefon, trzeba wejść w zakładkę "Releases", wybrać app-release.apk i postępować według instrukcji prezentowanych przez system.
 
 ## Spis Treści
 
 - [Opis projektu](#opis-projektu)
 - [Wymagania systemowe](#wymagania-systemowe)
 - [Instalacja](#instalacja)
-- [Konfiguracja](#konfiguracja)
 - [Kontrybucja](#kontrybucja)
 - [Użycie](#użycie)
 
@@ -62,6 +61,12 @@ Aby zainstalować projekt na swoim urządzeniu, wykonaj następujące kroki:
    ```
 
    Gdzie `<platforma>` to system operacyjny, na którym chcesz uruchomić aplikację (np. `apk`, `ipa`, `macos`, `windows`, itp.).
+
+6. Zainstaluj ją przy użyciu mając podłączone urządzenie do komputera:
+
+   ```bash
+   flutter install
+   ```
 
 ## Kontrybucja
 

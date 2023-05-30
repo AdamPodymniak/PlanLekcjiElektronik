@@ -207,16 +207,26 @@ class _ScaffoldMenuState extends State<ScaffoldMenu> {
                               ),
                               cursorColor: Theming.primaryColor,
                               cursorHeight: 20,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 isCollapsed: true,
                                 hintText: "Szukaj",
-                                hintStyle: TextStyle(
+                                hintStyle: const TextStyle(
                                   fontSize: 14,
                                 ),
-                                icon: Icon(
-                                  Icons.search_rounded,
-                                  color: Theming.primaryColor,
-                                ),
+                                icon: _searchCtrl.text.isEmpty
+                                    ? const Icon(
+                                        Icons.search_rounded,
+                                        color: Theming.primaryColor,
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          setState(() => _searchCtrl.clear());
+                                        },
+                                        child: const Icon(
+                                          Icons.close_rounded,
+                                          color: Colors.red,
+                                        ),
+                                      ),
                                 border: InputBorder.none,
                               ),
                             ),
