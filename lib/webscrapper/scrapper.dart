@@ -4,7 +4,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import './teacher_list.dart';
+import '../utils/constants.dart';
 
 class LessonData {
   final String name;
@@ -77,11 +77,13 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
           lesson2DList
               .add(lessons[i].querySelectorAll('tr > th').map((e) => e.innerHtml.trim()).toList());
         } else {
-          lesson2DList.add([
-            lessons[i].querySelector('.nr')?.innerHtml.trim(),
-            lessons[i].querySelector('.g')?.innerHtml.trim(),
-            ...lessons[i].querySelectorAll('.l')
-          ]);
+          lesson2DList.add(
+            [
+              lessons[i].querySelector('.nr')?.innerHtml.trim(),
+              lessons[i].querySelector('.g')?.innerHtml.trim(),
+              ...lessons[i].querySelectorAll('.l')
+            ],
+          );
         }
       }
       int n = 0;
