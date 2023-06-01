@@ -63,8 +63,25 @@ class LessonItem extends StatelessWidget {
         now.isBefore(lessonEnd) &&
         lessonData.day == weekdays[now.weekday - 1];
 
-    //TODO fix it
-    // final isNext = lessonData.day == weekdays[now.weekday - 1];
+    final nextLessonHour = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(startHourNextLesson.split("-")[0].split(":")[0]),
+      int.parse(startHourNextLesson.split("-")[0].split(":")[1]),
+    );
+
+    final beforeLessonHour = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(endHourLessonBefore.split("-")[0].split(":")[0]),
+      int.parse(endHourLessonBefore.split("-")[0].split(":")[1]),
+    );
+
+    final isNext = now.isAfter(beforeLessonHour) &&
+        now.isBefore(nextLessonHour) &&
+        lessonData.day == weekdays[now.weekday - 1];
 
     return Visibility(
       visible: lessonData.day == weekdays[dayIndex],
@@ -126,6 +143,16 @@ class LessonItem extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Visibility(
+                      visible: !_isLessonGroup ? isNext : false,
+                      child: const Text(
+                        "• Następna",
+                        style: TextStyle(
+                          color: Theming.orangeTone,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                     Text(
                       formattedTime,
                       style: TextStyle(
@@ -163,7 +190,11 @@ class LessonItem extends StatelessWidget {
                             height: 80,
                             width: 5,
                             decoration: BoxDecoration(
-                              color: isActive ? Theming.greenTone : Theming.primaryColor,
+                              color: isActive
+                                  ? Theming.greenTone
+                                  : isNext
+                                      ? Theming.orangeTone
+                                      : Theming.primaryColor,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(5),
                                 bottomLeft: Radius.circular(5),

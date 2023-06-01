@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class Theming {
   Theming._();
 
-  static const Color primaryColor = Color.fromARGB(255, 71, 151, 217);
-  static const Color bgColor = Color.fromARGB(255, 32, 31, 55);
-  static const Color whiteTone = Color.fromARGB(255, 242, 227, 232);
-  static const Color greenTone = Color.fromARGB(255, 77, 232, 11);
+  static const Color primaryColor = Color(0xFF4797D9);
+  static const Color bgColor = Color(0xFF201F37);
+  static const Color whiteTone = Color(0xFFF2E3E8);
+  static const Color greenTone = Color(0xFF4DE80B);
+  static const Color orangeTone = Color(0xFFFF9800);
 }

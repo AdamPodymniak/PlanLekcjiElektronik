@@ -27,7 +27,7 @@ class TimeList extends StatelessWidget {
           //Used for grouping lessons (changing visibility of displayed time)
           endHourLessonBefore: i != 0 && weekdays[dayIndex] == lessons.lessonData[i - 1].day
               ? lessons.lessonData[i - 1].hour
-              : "07:10",
+              : "00:00",
           lessonData: lessons.lessonData[i],
           allData: lessons,
           dayIndex: dayIndex,
