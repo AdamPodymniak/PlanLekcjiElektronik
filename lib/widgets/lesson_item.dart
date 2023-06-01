@@ -144,7 +144,11 @@ class LessonItem extends StatelessWidget {
                       ),
                     ),
                     Visibility(
-                      visible: !_isLessonGroup ? isNext : false,
+                      visible: !_isLessonGroup
+                          ? isActive
+                              ? false
+                              : isNext
+                          : false,
                       child: const Text(
                         "• Następna",
                         style: TextStyle(
