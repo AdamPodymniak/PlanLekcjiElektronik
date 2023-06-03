@@ -73,7 +73,7 @@ class _ClassroomsPageState extends State<ClassroomsPage> {
       visible: data.type == "classroom",
       child: GestureDetector(
         onTap: () => context.push(
-          "/classroom-schedule",
+          "/",
           extra: data,
         ),
         child: Row(

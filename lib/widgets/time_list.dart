@@ -15,8 +15,24 @@ class TimeList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ..._lessonWrapper(),
+              SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<LessonItem> _lessonWrapper() {
     List<LessonItem> lessonItems = [];
-    lessonItems.clear();
     for (int i = 0; i < lessons.lessonData.length; i++) {
       lessonItems.add(
         LessonItem(
@@ -34,19 +50,6 @@ class TimeList extends StatelessWidget {
         ),
       );
     }
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ...lessonItems,
-              SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
-            ],
-          ),
-        ),
-      ),
-    );
+    return lessonItems;
   }
 }

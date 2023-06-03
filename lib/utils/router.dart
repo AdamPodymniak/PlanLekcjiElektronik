@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plan_lekcji/routes/classrooms_page.dart';
 
 import '../webscrapper/scrapper.dart';
 import '../widgets/scaffold_menu.dart';
 import '../routes/schedule_page.dart';
 import '../routes/teachers_page.dart';
-import '../routes/classrooms_page.dart';
-import '../routes/classroom_schedule_page.dart';
-import '../routes/teacher_schedule_page.dart';
 
 GoRouter router = GoRouter(
   initialLocation: '/',
@@ -45,36 +43,6 @@ GoRouter router = GoRouter(
             return pageTransition(
               state: state,
               childWidget: const ClassroomsPage(),
-            );
-          },
-        ),
-        GoRoute(
-          path: '/classroom-schedule',
-          pageBuilder: (_, state) {
-            return pageTransition(
-              state: state,
-              childWidget: ClassroomSchedulePage(
-                data: state.extra as AllLessons? ??
-                    AllLessons(
-                      title: "Sala lekcyjna",
-                      lessonData: [],
-                    ),
-              ),
-            );
-          },
-        ),
-        GoRoute(
-          path: '/teacher-schedule',
-          pageBuilder: (_, state) {
-            return pageTransition(
-              state: state,
-              childWidget: TeacherSchedulePage(
-                data: state.extra as AllLessons? ??
-                    AllLessons(
-                      title: "Plan nauczyciela",
-                      lessonData: [],
-                    ),
-              ),
             );
           },
         ),

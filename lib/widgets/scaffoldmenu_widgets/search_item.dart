@@ -25,15 +25,7 @@ class SearchItem extends StatelessWidget {
             return;
           }
 
-          if (data.type == "teacher") {
-            context.push("/teacher-schedule", extra: data);
-            return;
-          }
-
-          if (data.type == "classroom") {
-            context.push("/classroom-schedule", extra: data);
-            return;
-          }
+          context.push("/", extra: data);
         },
         child: Padding(
           padding: const EdgeInsets.only(

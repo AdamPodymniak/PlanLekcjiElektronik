@@ -6,7 +6,11 @@ import '/utils/theming.dart';
 class WeekdayRow extends StatefulWidget {
   final List<LessonData> lessons;
   final Function(int) onSelect;
-  const WeekdayRow({required this.lessons, required this.onSelect, super.key});
+  const WeekdayRow({
+    required this.lessons,
+    required this.onSelect,
+    super.key,
+  });
 
   @override
   State<WeekdayRow> createState() => _WeekdayRowState();

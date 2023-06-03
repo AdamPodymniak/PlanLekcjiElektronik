@@ -14,7 +14,6 @@ class LessonData {
   final String hour;
   final String day;
   final String number;
-
   LessonData({
     required this.name,
     this.classroom,
@@ -74,14 +73,15 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
 
       for (int i = 0; i < lessons.length - 1; i++) {
         if (i == 0) {
-          lesson2DList
-              .add(lessons[i].querySelectorAll('tr > th').map((e) => e.innerHtml.trim()).toList());
+          lesson2DList.add(
+            lessons[i].querySelectorAll('tr > th').map((e) => e.innerHtml.trim()).toList(),
+          );
         } else {
           lesson2DList.add(
             [
               lessons[i].querySelector('.nr')?.innerHtml.trim(),
               lessons[i].querySelector('.g')?.innerHtml.trim(),
-              ...lessons[i].querySelectorAll('.l')
+              ...lessons[i].querySelectorAll('.l'),
             ],
           );
         }
@@ -105,7 +105,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             final singleClassroomList =
                 lesson2DList[j][i].querySelectorAll('.s').map((e) => e.innerHtml.trim()).toList();
             if (singleLessonList.isNotEmpty) {
-              for (var k = 0; k < singleLessonList.length; k++) {
+              for (int k = 0; k < singleLessonList.length; k++) {
                 for (final element in teacherData) {
                   if (element.simple == singleTeacherList[k]) {
                     singleTeacherList[k] = element.full;
@@ -131,7 +131,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             final singleClassroomList =
                 lesson2DList[j][i].querySelectorAll('.s').map((e) => e.innerHtml.trim()).toList();
             if (singleLessonList.isNotEmpty) {
-              for (var k = 0; k < singleLessonList.length; k++) {
+              for (int k = 0; k < singleLessonList.length; k++) {
                 for (final element in teacherData) {
                   if (element.simple == title) title = element.full;
                 }
@@ -156,7 +156,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
             final singleTeacherList =
                 lesson2DList[j][i].querySelectorAll('.n').map((e) => e.innerHtml.trim()).toList();
             if (singleLessonList.isNotEmpty) {
-              for (var k = 0; k < singleLessonList.length; k++) {
+              for (int k = 0; k < singleLessonList.length; k++) {
                 for (final element in teacherData) {
                   if (element.simple == singleTeacherList[k]) {
                     singleTeacherList[k] = element.full;
@@ -180,7 +180,7 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
       return AllLessons(title: title, lessonData: output);
     }
     return null;
-  } catch (e) {
+  } catch (_) {
     return null;
   }
 }
@@ -216,7 +216,6 @@ Future<List<AllLessons>> extractAllData() async {
 
 Future saveData(String key, List<AllLessons> lessons) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-
   await prefs.setString(key, json.encode(lessons));
 }
 
@@ -226,7 +225,7 @@ Future<List<AllLessons>?> retrieveDataFromJSON() async {
   final retrievedRawData = prefs.getString("lessons");
   if (retrievedRawData != null) {
     final lessons = json.decode(retrievedRawData);
-    for (var lesson in lessons) {
+    for (final lesson in lessons) {
       List<LessonData> lessonData = [];
       for (var ld in lesson['lessonData']) {
         lessonData.add(

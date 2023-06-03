@@ -5,7 +5,7 @@ import '../utils/theming.dart';
 import '../utils/constants.dart' show weekdays;
 import '../webscrapper/scrapper.dart';
 
-class LessonItem extends StatelessWidget {
+class LessonItem extends StatefulWidget {
   final LessonData lessonData;
   final AllLessons allData;
   final int dayIndex;
@@ -20,30 +20,35 @@ class LessonItem extends StatelessWidget {
     super.key,
   });
 
-  bool get _isLessonGroup => endHourLessonBefore == lessonData.hour;
+  @override
+  State<LessonItem> createState() => _LessonItemState();
+}
 
-  List<String> get _times => lessonData.hour.split("-");
+class _LessonItemState extends State<LessonItem> {
+  late final List<String> _times;
+  late final List<String> starts, ends;
+  late final String formStart, formEnd, formattedTime;
+  late final DateTime now;
+  late final DateTime lessonStart, lessonEnd;
+  late final DateTime beforeLessonHour, nextLessonHour;
 
   @override
-  Widget build(BuildContext context) {
-    //[0] = hour, [1] = minute
-    final starts = [
+  void initState() {
+    super.initState();
+    _times = widget.lessonData.hour.split("-");
+    starts = [
       _times[0].split(":")[0],
       _times[0].split(":")[1],
     ];
-    final ends = [
+    ends = [
       _times[1].split(":")[0],
       _times[1].split(":")[1],
     ];
-
-    //formatted times
-    final formStart = "${int.parse(starts[0]) < 10 ? "0" : ""}${starts[0].trim()}:${starts[1]}";
-    final formEnd = "${int.parse(ends[0]) < 10 ? "0" : ""}${ends[0].trim()}:${ends[1]}";
-    final formattedTime = "$formStart - $formEnd";
-
-    final now = DateTime.now();
-
-    final lessonStart = DateTime(
+    formStart = "${int.parse(starts[0]) < 10 ? "0" : ""}${starts[0].trim()}:${starts[1]}";
+    formEnd = "${int.parse(ends[0]) < 10 ? "0" : ""}${ends[0].trim()}:${ends[1]}";
+    formattedTime = "$formStart - $formEnd";
+    now = DateTime.now();
+    lessonStart = DateTime(
       now.year,
       now.month,
       now.day,
@@ -51,7 +56,7 @@ class LessonItem extends StatelessWidget {
       int.parse(starts[1]),
     );
 
-    final lessonEnd = DateTime(
+    lessonEnd = DateTime(
       now.year,
       now.month,
       now.day,
@@ -59,32 +64,41 @@ class LessonItem extends StatelessWidget {
       int.parse(ends[1]),
     );
 
-    final isActive = now.isAfter(lessonStart) &&
+    nextLessonHour = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(widget.startHourNextLesson.split("-")[0].split(":")[0]),
+      int.parse(widget.startHourNextLesson.split("-")[0].split(":")[1]),
+    );
+
+    beforeLessonHour = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(widget.endHourLessonBefore.split("-")[0].split(":")[0]),
+      int.parse(widget.endHourLessonBefore.split("-")[0].split(":")[1]),
+    );
+  }
+
+  bool get _isLessonGroup => widget.endHourLessonBefore == widget.lessonData.hour;
+
+  bool get _isActive {
+    return now.isAfter(lessonStart) &&
         now.isBefore(lessonEnd) &&
-        lessonData.day == weekdays[now.weekday - 1];
+        widget.lessonData.day == weekdays[now.weekday - 1];
+  }
 
-    final nextLessonHour = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      int.parse(startHourNextLesson.split("-")[0].split(":")[0]),
-      int.parse(startHourNextLesson.split("-")[0].split(":")[1]),
-    );
-
-    final beforeLessonHour = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      int.parse(endHourLessonBefore.split("-")[0].split(":")[0]),
-      int.parse(endHourLessonBefore.split("-")[0].split(":")[1]),
-    );
-
-    final isNext = now.isAfter(beforeLessonHour) &&
+  bool get _isNext {
+    return now.isAfter(beforeLessonHour) &&
         now.isBefore(nextLessonHour) &&
-        lessonData.day == weekdays[now.weekday - 1];
+        widget.lessonData.day == weekdays[now.weekday - 1];
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Visibility(
-      visible: lessonData.day == weekdays[dayIndex],
+      visible: widget.lessonData.day == weekdays[widget.dayIndex],
       child: Padding(
         padding: const EdgeInsets.only(bottom: 25),
         child: SingleChildScrollView(
@@ -106,19 +120,19 @@ class LessonItem extends StatelessWidget {
                           _eventModalItem(
                             ctx,
                             type: "class",
-                            caption: lessonData.className,
+                            caption: widget.lessonData.className,
                             icon: Icons.calendar_month,
                           ),
                           _eventModalItem(
                             ctx,
                             type: "teacher",
-                            caption: lessonData.teacher,
+                            caption: widget.lessonData.teacher,
                             icon: Icons.person_rounded,
                           ),
                           _eventModalItem(
                             ctx,
                             type: "classroom",
-                            caption: lessonData.classroom,
+                            caption: widget.lessonData.classroom,
                             icon: Icons.meeting_room_rounded,
                           ),
                         ],
@@ -134,7 +148,7 @@ class LessonItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Visibility(
-                      visible: !_isLessonGroup ? isActive : false,
+                      visible: !_isLessonGroup ? _isActive : false,
                       child: const Text(
                         "• Teraz",
                         style: TextStyle(
@@ -145,9 +159,9 @@ class LessonItem extends StatelessWidget {
                     ),
                     Visibility(
                       visible: !_isLessonGroup
-                          ? isActive
+                          ? _isActive
                               ? false
-                              : isNext
+                              : _isNext
                           : false,
                       child: const Text(
                         "• Następna",
@@ -162,7 +176,7 @@ class LessonItem extends StatelessWidget {
                       style: TextStyle(
                         color: _isLessonGroup
                             ? Colors.transparent
-                            : Theming.whiteTone.withOpacity(isActive ? 1 : 0.6),
+                            : Theming.whiteTone.withOpacity(_isActive ? 1 : 0.6),
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -174,7 +188,7 @@ class LessonItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Lekcja: ${lessonData.number}",
+                      "Lekcja: ${widget.lessonData.number}",
                       style: const TextStyle(
                         color: Theming.whiteTone,
                         fontWeight: FontWeight.bold,
@@ -194,9 +208,9 @@ class LessonItem extends StatelessWidget {
                             height: 80,
                             width: 5,
                             decoration: BoxDecoration(
-                              color: isActive
+                              color: _isActive
                                   ? Theming.greenTone
-                                  : isNext
+                                  : _isNext
                                       ? Theming.orangeTone
                                       : Theming.primaryColor,
                               borderRadius: const BorderRadius.only(
@@ -210,7 +224,7 @@ class LessonItem extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                lessonData.name,
+                                widget.lessonData.name,
                                 style: const TextStyle(
                                   color: Theming.whiteTone,
                                   fontWeight: FontWeight.bold,
@@ -218,7 +232,7 @@ class LessonItem extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                _bottomText(lessonData, allData.type),
+                                _bottomText(widget.lessonData, widget.allData.type),
                                 style: const TextStyle(
                                   color: Theming.whiteTone,
                                 ),
@@ -253,14 +267,7 @@ class LessonItem extends StatelessWidget {
           for (final e in data!) {
             if (e.title!.split(" ")[0] == caption) {
               if (ctx.mounted) {
-                ctx.go(
-                  type == "class"
-                      ? "/"
-                      : type == "teacher"
-                          ? "/teacher-schedule"
-                          : "/classroom-schedule",
-                  extra: e,
-                );
+                ctx.go("/", extra: e);
                 Navigator.pop(ctx);
               }
               break;

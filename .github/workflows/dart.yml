@@ -1,0 +1,47 @@
+name: Android Release
+
+# 1
+on:
+  # 2
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # 3
+  workflow_dispatch:
+
+# 4
+jobs:
+  # 5
+  build:
+    # 6
+    runs-on: ubuntu-latest
+
+    # 7
+    steps:
+      # 8
+      - uses: actions/checkout@v3
+      # 9
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: "12.x"
+      # 10   
+      - uses: subosito/flutter-action@v2
+        with:
+          # 11
+          flutter-version: "3.0.0"
+          channel: 'stable'
+
+      # 12    
+      - name: Upgrade Flutter
+        run: flutter upgrade
+        
+      # 13
+      - name: Get dependencies
+        run: flutter pub get
+
+      # 14
+      - name: Start release build
+        run: flutter build apk --release

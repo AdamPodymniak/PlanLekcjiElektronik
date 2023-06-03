@@ -48,6 +48,7 @@ class _CategoryListState extends State<CategoryList> {
 
   Widget wrapper(AllLessons data) {
     bool isFavourite = data.title == favClass;
+
     return Visibility(
       visible: data.type == widget.category,
       child: Row(
@@ -61,15 +62,7 @@ class _CategoryListState extends State<CategoryList> {
                 return;
               }
 
-              if (data.type == "teacher") {
-                context.push("/teacher-schedule", extra: data);
-                return;
-              }
-
-              if (data.type == "classroom") {
-                context.push("/classroom-schedule", extra: data);
-                return;
-              }
+              context.push("/", extra: data);
             },
             child: Text(
               data.title!.split(" ")[0][data.title!.split(" ")[0].length - 1] == "."

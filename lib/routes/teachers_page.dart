@@ -5,13 +5,15 @@ import '../webscrapper/scrapper.dart';
 import '../utils/theming.dart';
 
 class TeachersPage extends StatefulWidget {
-  const TeachersPage({super.key});
+  const TeachersPage({
+    super.key,
+  });
 
   @override
-  State<TeachersPage> createState() => _TeachersPageState();
+  State<TeachersPage> createState() => _TeachersPagePageState();
 }
 
-class _TeachersPageState extends State<TeachersPage> {
+class _TeachersPagePageState extends State<TeachersPage> {
   List<Widget> teachers = [];
 
   @override
@@ -72,7 +74,7 @@ class _TeachersPageState extends State<TeachersPage> {
       visible: data.type == "teacher",
       child: GestureDetector(
         onTap: () => context.push(
-          "/teacher-schedule",
+          "/",
           extra: data,
         ),
         child: Row(
