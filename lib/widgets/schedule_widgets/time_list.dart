@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../webscrapper/scrapper.dart';
-import '../widgets/swipeable_page.dart';
+import '/webscrapper/scrapper.dart';
+import 'swipeable_page.dart';
 
 class TimeList extends StatelessWidget {
   final AllLessons lessons;

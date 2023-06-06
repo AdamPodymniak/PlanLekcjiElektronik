@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../utils/theming.dart';
-import '../widgets/weekday_row.dart';
-import '../widgets/time_list.dart';
+import '../widgets/schedule_widgets/weekday_row.dart';
+import '../widgets/schedule_widgets/time_list.dart';
 import '../webscrapper/scrapper.dart';
 
 class SchedulePage extends StatefulWidget {

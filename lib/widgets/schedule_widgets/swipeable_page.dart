@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:plan_lekcji/utils/theming.dart';
 
-import '../webscrapper/scrapper.dart';
-import '../widgets/lesson_item.dart';
+import '/webscrapper/scrapper.dart';
+import 'lesson_item.dart';
+import '/utils/theming.dart';
 
 class SwipeablePage extends StatelessWidget {
   final String day;
@@ -48,12 +48,12 @@ class SwipeablePage extends StatelessWidget {
           LessonItem(
             //Used for showing next lesson
             startHourNextLesson:
-                i != lessons.lessonData.length - 1 ? lessons.lessonData[i + 1].hour : "00:00",
+                i != lessons.lessonData.length - 1 ? lessons.lessonData[i + 1].hour : "00:00-00:01",
 
             //Used for grouping lessons (changing visibility of displayed time)
             endHourLessonBefore: i != 0 && day == lessons.lessonData[i - 1].day
                 ? lessons.lessonData[i - 1].hour
-                : "00:00",
+                : "00:00-00:01",
             lessonData: lessons.lessonData[i],
             allData: lessons,
           ),

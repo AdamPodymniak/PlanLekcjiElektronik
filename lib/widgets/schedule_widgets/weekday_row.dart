@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../webscrapper/scrapper.dart';
+import '/webscrapper/scrapper.dart';
 import '/utils/theming.dart';
 
-class WeekdayRow extends StatefulWidget {
+class WeekdayRow extends StatelessWidget {
   final List<LessonData> lessons;
   final TabController ctrl;
   const WeekdayRow({
@@ -13,11 +13,6 @@ class WeekdayRow extends StatefulWidget {
   });
 
   @override
-  State<WeekdayRow> createState() => _WeekdayRowState();
-}
-
-class _WeekdayRowState extends State<WeekdayRow> {
-  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30),
@@ -26,7 +21,7 @@ class _WeekdayRowState extends State<WeekdayRow> {
         width: double.infinity,
         child: TabBar(
           isScrollable: true,
-          controller: widget.ctrl,
+          controller: ctrl,
           indicatorColor: Theming.primaryColor,
           dividerColor: Theming.bgColor,
           splashFactory: NoSplash.splashFactory,
@@ -45,7 +40,7 @@ class _WeekdayRowState extends State<WeekdayRow> {
   ///[weekdayNumber] must be 1 - 5 (monday - friday)
   Widget _weekdayBox(int index, String caption) {
     bool hasLessons = false;
-    for (final i in widget.lessons) {
+    for (final i in lessons) {
       if (i.day == caption) {
         hasLessons = true;
         break;

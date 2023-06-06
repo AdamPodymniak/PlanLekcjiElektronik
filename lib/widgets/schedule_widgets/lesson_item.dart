@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../utils/theming.dart';
-import '../utils/constants.dart' show weekdays;
-import '../webscrapper/scrapper.dart';
+import '/utils/theming.dart';
+import '/utils/constants.dart' show weekdays;
+import '/webscrapper/scrapper.dart';
 
 class LessonItem extends StatefulWidget {
   final LessonData lessonData;
   final AllLessons allData;
-
   final String endHourLessonBefore;
   final String startHourNextLesson;
   const LessonItem({
@@ -76,20 +75,21 @@ class _LessonItemState extends State<LessonItem> {
       now.year,
       now.month,
       now.day,
-      int.parse(widget.endHourLessonBefore.split("-")[0].split(":")[0]),
-      int.parse(widget.endHourLessonBefore.split("-")[0].split(":")[1]),
+      int.parse(widget.endHourLessonBefore.split("-")[1].split(":")[0]),
+      int.parse(widget.endHourLessonBefore.split("-")[1].split(":")[1]),
     );
+
     isLessonGroup = widget.endHourLessonBefore == widget.lessonData.hour;
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isNext = now.isAfter(beforeLessonHour) &&
-        now.isBefore(nextLessonHour) &&
-        widget.lessonData.day == weekdays[now.weekday - 1];
-
     bool isActive = now.isAfter(lessonStart) &&
         now.isBefore(lessonEnd) &&
+        widget.lessonData.day == weekdays[now.weekday - 1];
+
+    bool isNext = now.isAfter(beforeLessonHour) &&
+        now.isBefore(nextLessonHour) &&
         widget.lessonData.day == weekdays[now.weekday - 1];
 
     return Padding(
