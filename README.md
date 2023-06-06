@@ -1,6 +1,6 @@
 # Web Scraper Planu Lekcji Elektronika
 
-Aby pobrać aplikację na swój telefon, trzeba wejść w zakładkę "Releases", wybrać app-release.apk i postępować według instrukcji prezentowanych przez system.
+Aby pobrać aplikację na swój telefon, trzeba zeskanować kod QR i postępować według instrukcji prezentowanych przez system.
 
 <img src="/assets/qrcode.png" width="40%" height="40%" />
 
