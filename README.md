@@ -2,6 +2,9 @@
 
 Aby pobrać aplikację na swój telefon, trzeba wejść w zakładkę "Releases", wybrać app-release.apk i postępować według instrukcji prezentowanych przez system.
 
+
+![QR code installer](/assets/qrcode.png)
+
 ## Spis Treści
 
 - [Opis projektu](#opis-projektu)

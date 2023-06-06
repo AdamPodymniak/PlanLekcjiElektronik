@@ -1,55 +1,43 @@
 import 'package:flutter/material.dart';
 
-import '/webscrapper/scrapper.dart';
-import './lesson_item.dart';
-import '../utils/constants.dart';
+import '../webscrapper/scrapper.dart';
+import '../widgets/swipeable_page.dart';
 
 class TimeList extends StatelessWidget {
-  final int dayIndex;
   final AllLessons lessons;
+  final TabController ctrl;
   const TimeList({
-    required this.dayIndex,
     required this.lessons,
+    required this.ctrl,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ..._lessonWrapper(),
-              SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 60),
-            ],
-          ),
+    return TabBarView(
+      controller: ctrl,
+      children: [
+        SwipeablePage(
+          day: "Poniedziałek",
+          lessons: lessons,
         ),
-      ),
+        SwipeablePage(
+          day: "Wtorek",
+          lessons: lessons,
+        ),
+        SwipeablePage(
+          day: "Środa",
+          lessons: lessons,
+        ),
+        SwipeablePage(
+          day: "Czwartek",
+          lessons: lessons,
+        ),
+        SwipeablePage(
+          day: "Piątek",
+          lessons: lessons,
+        ),
+      ],
     );
-  }
-
-  List<LessonItem> _lessonWrapper() {
-    List<LessonItem> lessonItems = [];
-    for (int i = 0; i < lessons.lessonData.length; i++) {
-      lessonItems.add(
-        LessonItem(
-          //Used for showing next lesson
-          startHourNextLesson:
-              i != lessons.lessonData.length - 1 ? lessons.lessonData[i + 1].hour : "00:00",
-
-          //Used for grouping lessons (changing visibility of displayed time)
-          endHourLessonBefore: i != 0 && weekdays[dayIndex] == lessons.lessonData[i - 1].day
-              ? lessons.lessonData[i - 1].hour
-              : "00:00",
-          lessonData: lessons.lessonData[i],
-          allData: lessons,
-          dayIndex: dayIndex,
-        ),
-      );
-    }
-    return lessonItems;
   }
 }

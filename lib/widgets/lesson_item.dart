@@ -8,7 +8,7 @@ import '../webscrapper/scrapper.dart';
 class LessonItem extends StatefulWidget {
   final LessonData lessonData;
   final AllLessons allData;
-  final int dayIndex;
+
   final String endHourLessonBefore;
   final String startHourNextLesson;
   const LessonItem({
@@ -16,7 +16,6 @@ class LessonItem extends StatefulWidget {
     required this.endHourLessonBefore,
     required this.lessonData,
     required this.allData,
-    required this.dayIndex,
     super.key,
   });
 
@@ -31,6 +30,7 @@ class _LessonItemState extends State<LessonItem> {
   late final DateTime now;
   late final DateTime lessonStart, lessonEnd;
   late final DateTime beforeLessonHour, nextLessonHour;
+  late final bool isLessonGroup;
 
   @override
   void initState() {
@@ -79,174 +79,163 @@ class _LessonItemState extends State<LessonItem> {
       int.parse(widget.endHourLessonBefore.split("-")[0].split(":")[0]),
       int.parse(widget.endHourLessonBefore.split("-")[0].split(":")[1]),
     );
-  }
-
-  bool get _isLessonGroup => widget.endHourLessonBefore == widget.lessonData.hour;
-
-  bool get _isActive {
-    return now.isAfter(lessonStart) &&
-        now.isBefore(lessonEnd) &&
-        widget.lessonData.day == weekdays[now.weekday - 1];
-  }
-
-  bool get _isNext {
-    return now.isAfter(beforeLessonHour) &&
-        now.isBefore(nextLessonHour) &&
-        widget.lessonData.day == weekdays[now.weekday - 1];
+    isLessonGroup = widget.endHourLessonBefore == widget.lessonData.hour;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: widget.lessonData.day == weekdays[widget.dayIndex],
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 25),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                useRootNavigator: true,
-                backgroundColor: Theming.bgColor,
-                builder: (ctx) {
-                  return SizedBox(
-                    height: 190,
-                    width: double.infinity,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width / 4),
-                      child: Column(
-                        children: [
-                          _eventModalItem(
-                            ctx,
-                            type: "class",
-                            caption: widget.lessonData.className,
-                            icon: Icons.calendar_month,
-                          ),
-                          _eventModalItem(
-                            ctx,
-                            type: "teacher",
-                            caption: widget.lessonData.teacher,
-                            icon: Icons.person_rounded,
-                          ),
-                          _eventModalItem(
-                            ctx,
-                            type: "classroom",
-                            caption: widget.lessonData.classroom,
-                            icon: Icons.meeting_room_rounded,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-            child: Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Visibility(
-                      visible: !_isLessonGroup ? _isActive : false,
-                      child: const Text(
-                        "• Teraz",
-                        style: TextStyle(
-                          color: Theming.greenTone,
-                          fontWeight: FontWeight.bold,
+    bool isNext = now.isAfter(beforeLessonHour) &&
+        now.isBefore(nextLessonHour) &&
+        widget.lessonData.day == weekdays[now.weekday - 1];
+
+    bool isActive = now.isAfter(lessonStart) &&
+        now.isBefore(lessonEnd) &&
+        widget.lessonData.day == weekdays[now.weekday - 1];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 25),
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        child: GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              useRootNavigator: true,
+              backgroundColor: Theming.bgColor,
+              builder: (ctx) {
+                return SizedBox(
+                  height: 190,
+                  width: double.infinity,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: MediaQuery.of(context).size.width / 4),
+                    child: Column(
+                      children: [
+                        _eventModalItem(
+                          ctx,
+                          type: "class",
+                          caption: widget.lessonData.className,
+                          icon: Icons.calendar_month,
                         ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: !_isLessonGroup
-                          ? _isActive
-                              ? false
-                              : _isNext
-                          : false,
-                      child: const Text(
-                        "• Następna",
-                        style: TextStyle(
-                          color: Theming.orangeTone,
-                          fontWeight: FontWeight.bold,
+                        _eventModalItem(
+                          ctx,
+                          type: "teacher",
+                          caption: widget.lessonData.teacher,
+                          icon: Icons.person_rounded,
                         ),
-                      ),
+                        _eventModalItem(
+                          ctx,
+                          type: "classroom",
+                          caption: widget.lessonData.classroom,
+                          icon: Icons.meeting_room_rounded,
+                        ),
+                      ],
                     ),
-                    Text(
-                      formattedTime,
+                  ),
+                );
+              },
+            );
+          },
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                    visible: !isLessonGroup ? isActive : false,
+                    child: const Text(
+                      "• Teraz",
                       style: TextStyle(
-                        color: _isLessonGroup
-                            ? Colors.transparent
-                            : Theming.whiteTone.withOpacity(_isActive ? 1 : 0.6),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Lekcja: ${widget.lessonData.number}",
-                      style: const TextStyle(
-                        color: Theming.whiteTone,
+                        color: Theming.greenTone,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(
-                        right: 15,
+                  ),
+                  Visibility(
+                    visible: !isLessonGroup
+                        ? isActive
+                            ? false
+                            : isNext
+                        : false,
+                    child: const Text(
+                      "• Następna",
+                      style: TextStyle(
+                        color: Theming.orangeTone,
+                        fontWeight: FontWeight.bold,
                       ),
-                      decoration: BoxDecoration(
-                        color: Theming.whiteTone.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            height: 80,
-                            width: 5,
-                            decoration: BoxDecoration(
-                              color: _isActive
-                                  ? Theming.greenTone
-                                  : _isNext
-                                      ? Theming.orangeTone
-                                      : Theming.primaryColor,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(5),
-                                bottomLeft: Radius.circular(5),
-                              ),
+                    ),
+                  ),
+                  Text(
+                    formattedTime,
+                    style: TextStyle(
+                      color: isLessonGroup
+                          ? Colors.transparent
+                          : Theming.whiteTone.withOpacity(isActive ? 1 : 0.6),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Lekcja: ${widget.lessonData.number}",
+                    style: const TextStyle(
+                      color: Theming.whiteTone,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(
+                      right: 15,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theming.whiteTone.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 80,
+                          width: 5,
+                          decoration: BoxDecoration(
+                            color: isActive ? Theming.greenTone : Theming.primaryColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
                             ),
                           ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.lessonData.name,
-                                style: const TextStyle(
-                                  color: Theming.whiteTone,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.lessonData.name,
+                              style: const TextStyle(
+                                color: Theming.whiteTone,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
-                              Text(
-                                _bottomText(widget.lessonData, widget.allData.type),
-                                style: const TextStyle(
-                                  color: Theming.whiteTone,
-                                ),
+                            ),
+                            Text(
+                              _bottomText(widget.lessonData, widget.allData.type),
+                              style: const TextStyle(
+                                color: Theming.whiteTone,
                               ),
-                            ],
-                          )
-                        ],
-                      ),
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(width: 5),
-              ],
-            ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 5),
+            ],
           ),
         ),
       ),

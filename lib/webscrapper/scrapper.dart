@@ -87,8 +87,8 @@ Future<AllLessons?> extractSinglePageData(dynamic urlParam, String type) async {
         }
       }
       int n = 0;
-      for (var i = 2; i < lesson2DList[n].length; i++) {
-        for (var j = 1; j < lesson2DList.length; j++) {
+      for (int i = 2; i < lesson2DList[n].length; i++) {
+        for (int j = 1; j < lesson2DList.length; j++) {
           if (n == lesson2DList[j].length) {
             n = 0;
           } else {
@@ -227,7 +227,7 @@ Future<List<AllLessons>?> retrieveDataFromJSON() async {
     final lessons = json.decode(retrievedRawData);
     for (final lesson in lessons) {
       List<LessonData> lessonData = [];
-      for (var ld in lesson['lessonData']) {
+      for (final ld in lesson['lessonData']) {
         lessonData.add(
           LessonData(
             name: ld['name'],

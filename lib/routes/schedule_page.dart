@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../utils/theming.dart';
 import '../widgets/weekday_row.dart';
@@ -16,15 +17,31 @@ class SchedulePage extends StatefulWidget {
   State<SchedulePage> createState() => _SchedulePageState();
 }
 
-class _SchedulePageState extends State<SchedulePage> {
-  int weekdayIndex = 0;
+class _SchedulePageState extends State<SchedulePage> with SingleTickerProviderStateMixin {
+  late TabController _tabCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabCtrl = TabController(
+      length: 5,
+      vsync: this,
+      initialIndex: DateTime.now().weekday > 5 ? 0 : DateTime.now().weekday - 1,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _tabCtrl.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theming.bgColor,
-      body: CustomScrollView(
-        slivers: [
+      body: NestedScrollView(
+        headerSliverBuilder: (_, isScrolled) => [
           SliverAppBar(
             backgroundColor: Theming.bgColor,
             surfaceTintColor: Theming.bgColor,
@@ -32,6 +49,17 @@ class _SchedulePageState extends State<SchedulePage> {
             pinned: true,
             centerTitle: true,
             expandedHeight: 140,
+            leading: Visibility(
+              visible: context.canPop(),
+              child: IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Theming.whiteTone,
+                  size: 20,
+                ),
+              ),
+            ),
             title: Text(
               widget.data.title ?? "Wybierz klasę",
               style: const TextStyle(
@@ -45,19 +73,17 @@ class _SchedulePageState extends State<SchedulePage> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: WeekdayRow(
+                  ctrl: _tabCtrl,
                   lessons: widget.data.lessonData,
-                  onSelect: (wd) {
-                    setState(() => weekdayIndex = wd);
-                  },
                 ),
               ),
             ),
           ),
-          TimeList(
-            dayIndex: weekdayIndex,
-            lessons: widget.data,
-          ),
         ],
+        body: TimeList(
+          lessons: widget.data,
+          ctrl: _tabCtrl,
+        ),
       ),
     );
   }
