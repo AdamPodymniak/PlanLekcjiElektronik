@@ -142,25 +142,19 @@ class _LessonItemState extends State<LessonItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Visibility(
-                    visible: !isLessonGroup ? isActive : false,
-                    child: const Text(
-                      "• Teraz",
+                    visible: !isLessonGroup ? isActive || isNext : false,
+                    child: Text(
+                      isActive
+                          ? "• Teraz"
+                          : isNext
+                              ? "• Następna"
+                              : "",
                       style: TextStyle(
-                        color: Theming.greenTone,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: !isLessonGroup
-                        ? isActive
-                            ? false
+                        color: isActive
+                            ? Theming.greenTone
                             : isNext
-                        : false,
-                    child: const Text(
-                      "• Następna",
-                      style: TextStyle(
-                        color: Theming.orangeTone,
+                                ? Theming.orangeTone
+                                : Colors.transparent,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

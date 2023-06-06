@@ -24,6 +24,7 @@ class SwipeablePage extends StatelessWidget {
                 style: TextStyle(
                   color: Theming.whiteTone,
                   fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
               ),
             )
@@ -45,8 +46,11 @@ class SwipeablePage extends StatelessWidget {
       if (lessons.lessonData[i].day == day) {
         validLessons.add(
           LessonItem(
+            //Used for showing next lesson
             startHourNextLesson:
                 i != lessons.lessonData.length - 1 ? lessons.lessonData[i + 1].hour : "00:00",
+
+            //Used for grouping lessons (changing visibility of displayed time)
             endHourLessonBefore: i != 0 && day == lessons.lessonData[i - 1].day
                 ? lessons.lessonData[i - 1].hour
                 : "00:00",
